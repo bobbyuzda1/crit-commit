@@ -39,7 +39,7 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 10: Game state persistence manager
 - [x] Task 11: HTTP server and WebSocket
 - [x] Task 12: Prompt builder for Claude game engine
-- [ ] Task 13: Response parser and Claude invoker
+- [x] Task 13: Response parser and Claude invoker
 - [ ] Task 14: Progression engine — XP, leveling, crits, drops
 - [ ] Task 15: Party manager — terminal companions and sub-agent summons
 - [ ] Task 16: Zone manager — zone generation triggers and limits
