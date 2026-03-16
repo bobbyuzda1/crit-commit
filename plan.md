@@ -45,8 +45,8 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 16: Zone manager — zone generation triggers and limits
 - [x] Task 17: Stackjack core engine — match loop and basic cards
 - [x] Task 18: Stackjack special cards and NPC AI
-- [ ] Task 19: Game engine barrel exports
-- [ ] Task 20: Scanner orchestrator — wire everything together
+- [x] Task 19: Game engine barrel exports
+- [x] Task 20: Scanner orchestrator — wire everything together
 - [ ] Task 21: CLI scaffold and start/status commands
 - [ ] Task 22: First-run flow and character creation
 - [ ] Task 23: Reset and repair commands
