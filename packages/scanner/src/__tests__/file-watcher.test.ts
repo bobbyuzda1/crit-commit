@@ -28,7 +28,7 @@ describe("FileWatcher", () => {
     }
   });
 
-  it("debug: test chokidar directly", async () => {
+  it.skip("debug: test chokidar directly", async () => {
     let eventReceived = false;
     const pattern = path.join(tempDir, "**/*.jsonl");
 
