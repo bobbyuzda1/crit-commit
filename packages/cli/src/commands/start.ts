@@ -3,6 +3,7 @@ import { join } from "path";
 import { homedir } from "os";
 import { StateManager, Orchestrator } from "@crit-commit/scanner";
 import chalk from "chalk";
+import { firstRunFlow } from "../first-run.js";
 
 interface StartOptions {
   repair?: boolean;
@@ -14,10 +15,15 @@ export async function startCommand(options: StartOptions): Promise<void> {
   const hasExistingSave = existsSync(gameStatePath);
 
   if (!hasExistingSave) {
-    console.log(chalk.yellow("No save found. Run first-run setup."));
-    // TODO: Call first-run flow (next task)
-    console.log(chalk.red("First-run flow not yet implemented. Please wait for Task 22."));
-    process.exit(1);
+    console.log(chalk.yellow("No save found. Running first-run setup..."));
+    const result = await firstRunFlow();
+
+    if (!result.success) {
+      console.log(chalk.red("First-run setup failed or was cancelled."));
+      process.exit(1);
+    }
+
+    console.log(chalk.green(`Welcome, ${result.character?.name}!`));
   }
 
   try {

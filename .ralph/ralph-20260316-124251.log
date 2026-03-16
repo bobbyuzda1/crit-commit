@@ -375,3 +375,27 @@ All gates pass: 0 lint errors, typecheck clean, build succeeds, 218/218 tests pa
 ================================================================
   Iteration 25 / 60 — Task 21 — SONNET — 14:42:22
 ================================================================
+## Task 21 Complete ✅
+
+Successfully implemented the CLI scaffold with start and status commands:
+
+### **What was built:**
+- **CLI Entry Point**: Commander.js setup with `crit-commit start [--repair]` and `crit-commit status` commands
+- **Start Command**: Checks for existing save, starts Orchestrator, includes placeholder for first-run flow (Task 22)
+- **Status Command**: Comprehensive game state display (character, level, XP, quests, party, Stackjack record, ascension)
+
+### **Verification Gates Passed:**
+- ✅ `npm run typecheck` - All TypeScript compilation passed
+- ✅ `npm run lint` - Fixed unused imports, CLI console warnings expected
+- ✅ `npm run build` - All packages built successfully
+- ✅ `npm run test` - 218 tests passed, 1 skipped
+
+### **Committed:**
+Changes committed with message: "feat: add CLI scaffold with start and status commands"
+
+**Next Task:** Task 22 - First-run flow and character creation (will implement the interactive setup that start command currently references)
+
+  Progress: 21 / 35 tasks done
+================================================================
+  Iteration 26 / 60 — Task 22 — SONNET — 14:46:36
+================================================================
