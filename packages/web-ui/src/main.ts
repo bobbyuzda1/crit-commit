@@ -6,6 +6,9 @@ import { Dashboard } from "./ui/dashboard.js";
 import { QuestLog } from "./ui/quest-log.js";
 import { EventFeed } from "./ui/event-feed.js";
 import { StatsPanel } from "./ui/stats-panel.js";
+import { SceneManager } from "./scenes/scene-manager.js";
+import { createBaseCampScene } from "./scenes/base-camp.js";
+import { createCharacterSprite, createPartyMemberSprite } from "./sprites/character.js";
 
 async function init() {
   console.log("🎮 Initializing Crit Commit Web UI...");
@@ -92,57 +95,34 @@ async function init() {
     gameCanvasDiv.appendChild(app.canvas);
   }
 
-  // Create pixel-style text to verify pipeline works
-  const text = new Text({
-    text: "Crit Commit",
-    style: {
-      fontFamily: "monospace",
-      fontSize: 32,
-      fill: "#e2e8f0",
-      align: "center",
-    },
+  // Set up scene manager and load base camp
+  const sceneManager = new SceneManager(app);
+  const baseCampScene = createBaseCampScene(app, () => {
+    console.log("Coffee shop clicked — modal will be wired in Task 30");
   });
+  sceneManager.setScene(baseCampScene);
+  console.log("🏕️ Base camp scene loaded");
 
-  text.anchor.set(0.5);
-  text.x = app.screen.width / 2;
-  text.y = app.screen.height / 2;
-
-  app.stage.addChild(text);
-
-  // Create connection status text
-  const statusText = new Text({
-    text: "Connecting to server...",
-    style: {
-      fontFamily: "monospace",
-      fontSize: 16,
-      fill: "#64748b",
-      align: "center",
-    },
+  // Add player character sprite
+  const state = gameStore.getState();
+  const playerSprite = createCharacterSprite(app, {
+    name: state.character.name,
+    characterClass: state.character.class,
   });
+  playerSprite.x = app.screen.width * 0.45;
+  playerSprite.y = app.screen.height * 0.72;
+  baseCampScene.addChild(playerSprite);
 
-  statusText.anchor.set(0.5);
-  statusText.x = app.screen.width / 2;
-  statusText.y = (app.screen.height / 2) + 60;
-
-  app.stage.addChild(statusText);
-
-  // Update status text based on WebSocket connection
-  wsClient.onStatusChange((status) => {
-    const statusMessage = status.status === "connected" ? "🟢 Connected to game server" :
-                         status.status === "connecting" ? "🟡 Connecting to server..." :
-                         status.status === "failed" ? `🔴 Connection failed: ${status.lastError}` :
-                         "⚪ Disconnected from server";
-
-    statusText.text = statusMessage;
-    statusText.x = app.screen.width / 2; // Re-center after text change
-  });
-
-  // Handle resize
-  window.addEventListener("resize", () => {
-    text.x = app.screen.width / 2;
-    text.y = app.screen.height / 2;
-    statusText.x = app.screen.width / 2;
-    statusText.y = (app.screen.height / 2) + 60;
+  // Add active party members as smaller companion sprites
+  const partyMembers = state.party.members.filter(m => m.isActive);
+  partyMembers.forEach((member, i) => {
+    const companion = createPartyMemberSprite(app, {
+      name: member.name,
+      characterClass: member.class,
+    });
+    companion.x = app.screen.width * 0.45 + 50 + i * 40;
+    companion.y = app.screen.height * 0.74;
+    baseCampScene.addChild(companion);
   });
 
   // Store references globally for debugging
@@ -150,6 +130,7 @@ async function init() {
     gameStore,
     wsClient,
     pixiApp: app,
+    sceneManager,
     dashboard: {
       dashboard,
       questLog,

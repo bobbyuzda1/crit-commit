@@ -53,7 +53,7 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 24: Vite + PixiJS project setup
 - [x] Task 25: WebSocket client and game state store
 - [x] Task 26: Dashboard — quest log, event feed, stats
-- [ ] Task 27: Game canvas — base camp scene and character sprites
+- [x] Task 27: Game canvas — base camp scene and character sprites
 - [ ] Task 28: Crit animation and particle effects
 - [ ] Task 29: Stackjack UI
 - [ ] Task 30: Modal, settings, footer, and coffee shop
