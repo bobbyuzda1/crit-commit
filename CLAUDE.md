@@ -24,7 +24,30 @@ packages/
   game-engine/   # Game state management + Claude integration
   web-ui/        # PixiJS visual game + Stackjack + dashboard
   shared/        # TypeScript types, event contracts, constants
-  cli/           # CLI commands (start, status, reset, repair)
+  cli/           # CLI commands (start, status, repair via --repair flag)
+```
+
+## Implementation Status
+
+**✅ COMPLETE MVP** — All 35 planned tasks implemented and verified (March 2026). The complete Crit Commit game is ready to use:
+
+- **All packages build successfully**: TypeScript compilation, ESLint validation, comprehensive test suite (218 tests passing)
+- **CLI ready**: `node packages/cli/dist/index.js start` to launch the game, `status` for game state
+- **Web UI built**: PixiJS-powered visual interface with all game components (dashboard, Stackjack, zone selection, character display)
+- **End-to-end integration**: Scanner → Game Engine → Web UI data flow tested and working
+- **Documentation complete**: README, game design guide, Stackjack rules, contributing guide
+
+### Available Commands
+
+```bash
+# Start the game (includes first-run setup)
+node packages/cli/dist/index.js start
+
+# Show game status
+node packages/cli/dist/index.js status
+
+# Repair/reset game state from history
+node packages/cli/dist/index.js start --repair
 ```
 
 ## Key Technical Details

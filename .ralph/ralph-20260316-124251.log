@@ -748,3 +748,31 @@ All verification gates pass (218 tests, 0 errors). Next up: Task 34 (Community s
 ================================================================
   Iteration 42 / 60 — Task 34 — SONNET — 16:03:55
 ================================================================
+✅ **Task 34 Completed**: Community submission schema and GitHub Actions
+
+I successfully implemented:
+
+1. **`community/leaderboard-schema.json`** - Comprehensive JSON Schema defining the submission format with validation for:
+   - Character names (alphanumeric + safe characters only)
+   - Level (1-20), class (4 valid classes), ascension stars
+   - Stats like zones unlocked, Stackjack wins, total XP
+   - Optional narrative excerpt (max 500 chars)
+   - Required submission timestamp
+
+2. **`community/profile-template.md`** - Player profile template with character card format including:
+   - Basic character info, adventure stats, favorite zone
+   - Optional epic quest moment section
+   - Proper formatting for community showcase
+
+3. **`.github/workflows/validate-submission.yml`** - GitHub Actions workflow that validates:
+   - JSON schema compliance using ajv-cli
+   - File location requirements (must be in `community/submissions/`)
+   - Profanity filtering on character names and narrative excerpts
+   - Comprehensive validation summary and error reporting
+
+All verification gates passed and changes committed. The next unchecked task is **Task 35: Final build verification** - the final step to complete the Crit Commit MVP!
+
+  Progress: 34 / 35 tasks done
+================================================================
+  Iteration 43 / 60 — Task 35 — SONNET — 16:06:13
+================================================================
