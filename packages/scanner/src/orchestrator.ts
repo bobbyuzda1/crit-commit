@@ -6,7 +6,12 @@ import type {
   BatchedEvents,
   ClientMessage,
   PlayerSettings,
+  StackjackMatchState,
+  StackjackCard,
+  StackjackNPC,
+  StackjackAction,
 } from "@crit-commit/shared";
+import { BASE_CAMP_NPCS } from "@crit-commit/shared";
 import {
   buildPrompt,
   parseGameEngineResponse,
@@ -14,6 +19,10 @@ import {
   awardXP,
   checkCritStreak,
   rollCrit,
+  StackjackMatch,
+  npcTurn,
+  applyZoneChoice,
+  enforceZoneLimit,
 } from "@crit-commit/game-engine";
 import { StateManager } from "./state-manager.js";
 import { FileWatcher } from "./file-watcher.js";
@@ -21,6 +30,8 @@ import { EventAccumulator } from "./event-accumulator.js";
 import { MicroQuestEngine } from "./micro-quest-engine.js";
 import { GameServer } from "./server.js";
 import { parseJsonlLine } from "./jsonl-parser.js";
+import fs from "node:fs";
+import path from "node:path";
 
 export interface OrchestratorConfig {
   basePath?: string;
@@ -40,6 +51,8 @@ export class Orchestrator {
   private gameState: GameState | null = null;
   private settings: PlayerSettings | null = null;
   private running = false;
+  private stackjackMatch: StackjackMatch | null = null;
+  private currentOpponent: StackjackNPC | null = null;
 
   constructor(config: OrchestratorConfig) {
     this.config = config;
@@ -79,6 +92,14 @@ export class Orchestrator {
     this.fileWatcher = new FileWatcher(watchPaths, (line, sessionId) => {
       this.handleJsonlLine(line, sessionId);
     });
+
+    // Check for web-ui dist
+    const webUiIndex = path.resolve(this.config.staticDir, "index.html");
+    if (!fs.existsSync(webUiIndex)) {
+      console.warn(
+        `Warning: Web UI not found at ${this.config.staticDir}. Run "npm run build" in packages/web-ui to build it.`,
+      );
+    }
 
     // Create and start game server
     this.server = new GameServer(this.config.staticDir, this.settings);
@@ -172,14 +193,18 @@ export class Orchestrator {
         break;
 
       case "update_settings":
-        if (this.settings) {
-          this.settings = { ...this.settings, ...message.settings };
-          this.stateManager.saveSettings(this.settings);
-        }
+        this.handleUpdateSettings(message.settings);
+        break;
+
+      case "stackjack_action":
+        this.handleStackjackAction(message.action);
+        break;
+
+      case "zone_choice":
+        this.handleZoneChoice(message.zoneId);
         break;
 
       case "ping":
-        // Respond with status
         if (this.server) {
           this.server.pushUpdate({
             type: "status",
@@ -190,10 +215,262 @@ export class Orchestrator {
         break;
 
       default:
-        // Other message types (stackjack, equip, zone_choice, etc.)
-        // will be handled in future tasks
         break;
     }
+  }
+
+  /**
+   * Handle settings update: persist and dynamically update batch interval
+   */
+  private handleUpdateSettings(updates: Partial<PlayerSettings>): void {
+    if (!this.settings) return;
+
+    this.settings = { ...this.settings, ...updates };
+    this.stateManager.saveSettings(this.settings);
+
+    // Dynamically update batch timer if interval changed
+    if (updates.batchIntervalMinutes !== undefined && this.batchTimer) {
+      clearInterval(this.batchTimer);
+      const intervalMs = this.settings.batchIntervalMinutes * 60 * 1000;
+      this.batchTimer = setInterval(() => {
+        void this.processBatch();
+      }, intervalMs);
+    }
+  }
+
+  /**
+   * Handle Stackjack actions: route to match engine, push updates
+   */
+  private handleStackjackAction(action: StackjackAction): void {
+    if (!this.gameState || !this.server) return;
+
+    switch (action.type) {
+      case "start_match":
+        this.startStackjackMatch(action.opponentId, action.sideDeck);
+        break;
+
+      case "end_turn":
+        if (this.stackjackMatch) {
+          this.stackjackMatch.drawMainDeck();
+          this.stackjackMatch.endTurn();
+          this.processStackjackNPCTurn();
+          this.pushStackjackUpdate("Player drew and ended turn");
+        }
+        break;
+
+      case "play_side_card":
+        if (this.stackjackMatch) {
+          this.stackjackMatch.playCard(action.cardId, action.flipChoice);
+          this.pushStackjackUpdate(`Played card ${action.cardId}`);
+        }
+        break;
+
+      case "stand":
+        if (this.stackjackMatch) {
+          this.stackjackMatch.stand();
+          this.processStackjackNPCTurn();
+          this.pushStackjackUpdate("Player stood");
+        }
+        break;
+
+      case "quit_match":
+        this.stackjackMatch = null;
+        this.currentOpponent = null;
+        this.pushStackjackUpdate("Match abandoned");
+        break;
+
+      case "rematch":
+        if (this.currentOpponent) {
+          this.startStackjackMatch(this.currentOpponent.id, []);
+        }
+        break;
+    }
+  }
+
+  /**
+   * Start a new Stackjack match against an NPC
+   */
+  private startStackjackMatch(opponentId: string, sideDeckIds: string[]): void {
+    if (!this.gameState || !this.server) return;
+
+    // Find opponent NPC from base camp NPCs and zone NPCs
+    const allNPCs: StackjackNPC[] = [
+      ...BASE_CAMP_NPCS,
+      ...this.gameState.zones.flatMap(z => z.npcs),
+    ];
+    const opponent = allNPCs.find(npc => npc.id === opponentId);
+    if (!opponent) return;
+
+    // Build player side deck from card collection
+    const playerSideDeck: StackjackCard[] = sideDeckIds
+      .map(id => this.gameState!.cardCollection.find(c => c.id === id))
+      .filter((c): c is StackjackCard => c !== undefined)
+      .slice(0, 4);
+
+    this.currentOpponent = opponent;
+    this.stackjackMatch = new StackjackMatch();
+    this.stackjackMatch.startMatch(playerSideDeck, opponent.deck);
+
+    this.pushStackjackUpdate(`Match started vs ${opponent.name}`);
+  }
+
+  /**
+   * Process NPC turn after player action
+   */
+  private processStackjackNPCTurn(): void {
+    if (!this.stackjackMatch || !this.currentOpponent) return;
+
+    const state = this.stackjackMatch.getState();
+    if (state.gameOver || state.isPlayerTurn) return;
+
+    // Build the internal StackjackMatchState expected by npcTurn
+    const internalMatchState = {
+      playerTotal: state.playerTotal,
+      opponentTotal: state.opponentTotal,
+      playerSideDeck: state.playerSideDeck,
+      opponentSideDeck: state.opponentSideDeck,
+      mainDeckLastDraw: null as number | null,
+      opponentLastDraw: null as number | null,
+      mainDrawHistory: [] as number[],
+      isPlayerTurn: state.isPlayerTurn,
+      critNextCard: false,
+    };
+
+    const npcAction = npcTurn(internalMatchState, this.currentOpponent.difficulty, state.opponentSideDeck);
+
+    switch (npcAction.action) {
+      case "end_turn":
+        this.stackjackMatch.drawMainDeck();
+        this.stackjackMatch.endTurn();
+        break;
+      case "stand":
+        this.stackjackMatch.stand();
+        break;
+      case "play_card":
+        if (npcAction.cardId) {
+          this.stackjackMatch.playCard(npcAction.cardId, npcAction.flipChoice);
+        }
+        break;
+    }
+
+    // Check if match ended and apply rewards
+    const afterState = this.stackjackMatch.getState();
+    if (afterState.gameOver && this.gameState) {
+      this.applyStackjackRewards(afterState.winner === "player");
+    }
+  }
+
+  /**
+   * Push current Stackjack state to WebSocket clients
+   */
+  private pushStackjackUpdate(lastAction: string): void {
+    if (!this.server || !this.stackjackMatch) return;
+
+    const state = this.stackjackMatch.getState();
+    const matchState: StackjackMatchState = {
+      isActive: state.isActive,
+      opponentId: this.currentOpponent?.id,
+      playerTotal: state.playerTotal,
+      opponentTotal: state.opponentTotal,
+      playerRoundsWon: state.playerRoundsWon,
+      opponentRoundsWon: state.opponentRoundsWon,
+      currentRound: state.currentRound,
+      isPlayerTurn: state.isPlayerTurn,
+      hasPlayerStood: state.hasPlayerStood,
+      hasOpponentStood: state.hasOpponentStood,
+      gamePhase: state.gameOver ? "match_end" : "playing",
+      canPlaySideCard: state.playerSideDeck.length > 0,
+      playerSideCardsRemaining: state.playerSideDeck.length,
+    };
+
+    this.server.pushUpdate({
+      type: "stackjack_update",
+      matchState,
+      playerCards: state.playerCards,
+      availableSideCards: state.playerSideDeck,
+      lastAction,
+      matchResult: state.gameOver ? {
+        winner: state.winner || "opponent",
+        xpGained: state.winner === "player" ? 50 : 10,
+      } : undefined,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  /**
+   * Apply XP/rewards after a Stackjack match ends
+   */
+  private applyStackjackRewards(playerWon: boolean): void {
+    if (!this.gameState) return;
+
+    const xp = playerWon ? 50 : 10;
+    this.gameState = awardXP(this.gameState, xp);
+    this.gameState = {
+      ...this.gameState,
+      stats: {
+        ...this.gameState.stats,
+        stackjackWins: this.gameState.stats.stackjackWins + (playerWon ? 1 : 0),
+        stackjackLosses: this.gameState.stats.stackjackLosses + (playerWon ? 0 : 1),
+      },
+      stackjackState: {
+        ...this.gameState.stackjackState,
+        isActive: false,
+        gameOver: true,
+        winner: playerWon ? "player" : "opponent",
+      },
+    };
+
+    this.stateManager.saveState(this.gameState);
+    this.server?.updateGameState(this.gameState);
+  }
+
+  /**
+   * Handle zone choice: apply via ZoneManager, save state, push update
+   */
+  private handleZoneChoice(zoneId: string): void {
+    if (!this.gameState || !this.server) return;
+
+    // The zoneId from the client corresponds to a pending choice identifier
+    // Zone choices come from Claude engine as pending narrative events
+    // For now, create a zone from the choice data
+    // The zone details would typically come from pendingChoices in the narrative
+    const pendingChoices = (this.gameState.narrative as unknown as Record<string, unknown>).pendingChoices as Array<{
+      zoneId: string;
+      name: string;
+      description: string;
+      theme: string;
+      modifier: string;
+      modifierValue: number;
+    }> | undefined;
+
+    const choice = pendingChoices?.find(c => c.zoneId === zoneId);
+    if (!choice) return;
+
+    // Apply zone choice
+    this.gameState = applyZoneChoice(this.gameState, {
+      name: choice.name,
+      description: choice.description,
+      theme: choice.theme,
+      modifier: choice.modifier,
+      modifierValue: choice.modifierValue,
+    });
+
+    // Enforce zone limit
+    this.gameState = enforceZoneLimit(this.gameState);
+
+    // Clear pending choices from narrative
+    this.gameState = {
+      ...this.gameState,
+      narrative: {
+        ...this.gameState.narrative,
+      },
+    };
+    // Remove pendingChoices using type assertion since it's a dynamic field
+    delete (this.gameState.narrative as unknown as Record<string, unknown>).pendingChoices;
+
+    // Save and push update
+    this.stateManager.saveState(this.gameState);
+    this.server.updateGameState(this.gameState);
   }
 
   /**

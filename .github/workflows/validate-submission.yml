@@ -1,0 +1,87 @@
+name: Validate Community Submission
+
+on:
+  pull_request:
+    paths:
+      - 'community/submissions/**'
+
+jobs:
+  validate:
+    name: Validate Submission
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install -g ajv-cli
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: community/submissions/**/*.json
+
+      - name: Validate JSON Schema
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "Validating $file against schema..."
+            ajv validate -s community/leaderboard-schema.json -d "$file"
+          done
+
+      - name: Check file location
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ ! "$file" =~ ^community/submissions/.*\.json$ ]]; then
+              echo "❌ Error: $file is not in the correct directory (community/submissions/)"
+              exit 1
+            fi
+            echo "✅ $file is in correct location"
+          done
+
+      - name: Profanity check
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          # Simple profanity word list - expand as needed
+          PROFANITY_WORDS="damn|hell|shit|fuck|bitch|ass|bastard|crap|piss|whore|slut|fag|retard|gay|nazi|hitler"
+
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "Checking $file for profanity..."
+
+            # Extract characterName and narrativeExcerpt from JSON
+            CHARACTER_NAME=$(jq -r '.characterName // ""' "$file")
+            NARRATIVE_EXCERPT=$(jq -r '.narrativeExcerpt // ""' "$file")
+
+            # Check characterName
+            if echo "$CHARACTER_NAME" | grep -iE "($PROFANITY_WORDS)" > /dev/null; then
+              echo "❌ Error: Profanity detected in characterName: $CHARACTER_NAME"
+              exit 1
+            fi
+
+            # Check narrativeExcerpt (only if it exists)
+            if [[ -n "$NARRATIVE_EXCERPT" && "$NARRATIVE_EXCERPT" != "null" ]]; then
+              if echo "$NARRATIVE_EXCERPT" | grep -iE "($PROFANITY_WORDS)" > /dev/null; then
+                echo "❌ Error: Profanity detected in narrativeExcerpt"
+                exit 1
+              fi
+            fi
+
+            echo "✅ $file passed profanity check"
+          done
+
+      - name: Validation Summary
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "🎉 All submission files passed validation!"
+          echo "Files validated:"
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "  - $file"
+          done
