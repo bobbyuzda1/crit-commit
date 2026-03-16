@@ -58,7 +58,7 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 29: Stackjack UI
 - [x] Task 30: Modal, settings, footer, and coffee shop
 - [x] Task 31: Zone choice UI and world map
-- [ ] Task 32: End-to-end integration wiring
+- [x] Task 32: End-to-end integration wiring
 - [ ] Task 33: README and game documentation
 - [ ] Task 34: Community submission schema and GitHub Actions
 - [ ] Task 35: Final build verification
