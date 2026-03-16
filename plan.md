@@ -42,9 +42,9 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 13: Response parser and Claude invoker
 - [x] Task 14: Progression engine — XP, leveling, crits, drops
 - [x] Task 15: Party manager — terminal companions and sub-agent summons
-- [ ] Task 16: Zone manager — zone generation triggers and limits
-- [ ] Task 17: Stackjack core engine — match loop and basic cards
-- [ ] Task 18: Stackjack special cards and NPC AI
+- [x] Task 16: Zone manager — zone generation triggers and limits
+- [x] Task 17: Stackjack core engine — match loop and basic cards
+- [x] Task 18: Stackjack special cards and NPC AI
 - [ ] Task 19: Game engine barrel exports
 - [ ] Task 20: Scanner orchestrator — wire everything together
 - [ ] Task 21: CLI scaffold and start/status commands
