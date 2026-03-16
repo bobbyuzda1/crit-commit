@@ -341,3 +341,37 @@ Error: Reached max turns (40)
 ================================================================
   Iteration 23 / 60 — Task 19 — SONNET — 14:35:28
 ================================================================
+Perfect! **Task 19: Game engine barrel exports** has been completed successfully.
+
+## Summary
+
+✅ **Implemented barrel exports** in `packages/game-engine/src/index.ts` for all game engine modules:
+- Added exports for core modules (prompt-builder, response-parser, claude-invoker, progression, party-manager, zone-manager)
+- Added specific exports for Stackjack components (StackjackMatch, applyCardEffect, npcTurn)
+
+✅ **All verification gates passed**:
+- `npm run typecheck` ✓
+- `npm run lint` ✓ (only console warnings, no errors)  
+- `npm run build` ✓
+- `npm run test` ✓ (218 tests passed, 1 skipped)
+
+✅ **Changes committed** with message "feat: add game engine barrel exports"
+✅ **Plan updated** to mark Task 19 as complete
+
+The game engine now properly exports all its functionality through a clean barrel export pattern, making it ready for import by other packages in the monorepo.
+
+  Progress: 19 / 35 tasks done
+================================================================
+  Iteration 24 / 60 — Task 20 — OPUS — 14:37:55
+================================================================
+Task 20 complete. The scanner orchestrator wires all components together:
+
+- **`Orchestrator`** class in `packages/scanner/src/orchestrator.ts` — accepts config (basePath, port, batchInterval, staticDir), creates all subsystems (StateManager, FileWatcher, EventAccumulator, MicroQuestEngine, GameServer), manages the batch processing lifecycle (flush → micro-quests → Claude prompt → parse response → apply XP/crits → save state → push WebSocket updates), and handles client messages
+- **Updated barrel exports** in `packages/scanner/src/index.ts` — exports all scanner classes
+
+All gates pass: 0 lint errors, typecheck clean, build succeeds, 218/218 tests pass.
+
+  Progress: 20 / 35 tasks done
+================================================================
+  Iteration 25 / 60 — Task 21 — SONNET — 14:42:22
+================================================================
