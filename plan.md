@@ -48,7 +48,7 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 19: Game engine barrel exports
 - [x] Task 20: Scanner orchestrator — wire everything together
 - [x] Task 21: CLI scaffold and start/status commands
-- [ ] Task 22: First-run flow and character creation
+- [x] Task 22: First-run flow and character creation
 - [ ] Task 23: Reset and repair commands
 - [ ] Task 24: Vite + PixiJS project setup
 - [ ] Task 25: WebSocket client and game state store

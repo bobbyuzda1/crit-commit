@@ -399,3 +399,40 @@ Changes committed with message: "feat: add CLI scaffold with start and status co
 ================================================================
   Iteration 26 / 60 — Task 22 — SONNET — 14:46:36
 ================================================================
+Great! Task 22 has been successfully completed. Here's what I implemented:
+
+## ✅ Task 22: First-run flow and character creation - COMPLETED
+
+**What was built:**
+
+1. **Interactive First-Run Flow** (`packages/cli/src/first-run.ts`):
+   - Welcome banner: "Welcome to Crit Commit: A Claude Code RPG"
+   - Auto-detects Claude Code installations across multiple users
+   - Cross-platform support (Linux/Mac + Windows AppData fallback)
+   - Interactive character name prompt
+   - Character class selection with descriptions:
+     - Architect (system design)
+     - Scout (exploration)
+     - Artificer (tool creation) 
+     - Battlemage (AI + combat)
+   - Creates game state and saves settings with watchPaths
+
+2. **Start Command Integration** (`packages/cli/src/commands/start.ts`):
+   - Calls first-run flow when no save file exists
+   - Proper error handling and user feedback
+   - Seamless transition to game start after character creation
+
+**Verification Results:**
+- ✅ Lint: Passed (console warnings expected for CLI)
+- ✅ TypeScript: Passed  
+- ✅ Build: Passed
+- ✅ Tests: 218 passed, 1 skipped
+
+**Changes committed** with descriptive message and plan.md updated.
+
+The first-run experience is now fully functional! New users will get a guided setup process to create their character and configure Claude Code path watching before the game starts.
+
+  Progress: 22 / 35 tasks done
+================================================================
+  Iteration 27 / 60 — Task 23 — SONNET — 14:50:50
+================================================================
