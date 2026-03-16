@@ -5,10 +5,10 @@
   "type": "module",
   "workspaces": ["packages/*"],
   "scripts": {
-    "lint": "eslint .",
-    "typecheck": "tsc -b packages/shared packages/scanner packages/game-engine packages/cli",
+    "lint": "node node_modules/eslint/bin/eslint.js .",
+    "typecheck": "node node_modules/typescript/bin/tsc -b packages/shared packages/scanner packages/game-engine packages/cli",
     "build": "npm run build --workspaces --if-present",
-    "test": "vitest run --reporter=verbose",
+    "test": "node node_modules/vitest/vitest.mjs run --reporter=verbose",
     "dev": "npm run dev --workspace=packages/scanner"
   },
   "devDependencies": {

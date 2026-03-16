@@ -1,0 +1,1 @@
+console.log("Crit Commit Web UI");

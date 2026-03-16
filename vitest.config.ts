@@ -4,5 +4,6 @@ export default defineConfig({
   test: {
     include: ["packages/*/src/**/*.test.ts"],
     globals: true,
+    passWithNoTests: true,
   },
 });

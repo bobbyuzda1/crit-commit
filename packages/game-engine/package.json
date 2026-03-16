@@ -1,0 +1,10 @@
+{
+  "name": "@crit-commit/game-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": { "build": "node ../../node_modules/typescript/bin/tsc -b" },
+  "dependencies": { "@crit-commit/shared": "*" },
+  "devDependencies": { "typescript": "^5.6.0" }
+}
