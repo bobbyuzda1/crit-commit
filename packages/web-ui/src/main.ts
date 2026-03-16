@@ -9,6 +9,7 @@ import { StatsPanel } from "./ui/stats-panel.js";
 import { SceneManager } from "./scenes/scene-manager.js";
 import { createBaseCampScene } from "./scenes/base-camp.js";
 import { createCharacterSprite, createPartyMemberSprite } from "./sprites/character.js";
+import { CritEffectManager } from "./effects/crit-effect.js";
 
 async function init() {
   console.log("🎮 Initializing Crit Commit Web UI...");
@@ -35,6 +36,11 @@ async function init() {
   wsClient.onMessage((message) => {
     console.log("📨 Received server message:", message.type, message);
     gameStore.handleServerMessage(message);
+
+    // Handle crit effects (will be initialized after PixiJS app is ready)
+    if (message.type === "crit_trigger" && (window as any).critCommit?.critEffectManager) {
+      (window as any).critCommit.critEffectManager.triggerCritEffect(message);
+    }
   });
 
   // Subscribe to connection status changes
@@ -103,6 +109,10 @@ async function init() {
   sceneManager.setScene(baseCampScene);
   console.log("🏕️ Base camp scene loaded");
 
+  // Initialize crit effect manager
+  const critEffectManager = new CritEffectManager(app);
+  console.log("✨ Crit effect manager initialized");
+
   // Add player character sprite
   const state = gameStore.getState();
   const playerSprite = createCharacterSprite(app, {
@@ -131,6 +141,7 @@ async function init() {
     wsClient,
     pixiApp: app,
     sceneManager,
+    critEffectManager,
     dashboard: {
       dashboard,
       questLog,

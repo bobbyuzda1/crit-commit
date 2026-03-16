@@ -441,3 +441,133 @@ Error: Reached max turns (40)
 ================================================================
   Iteration 28 / 60 — Task 24 — SONNET — 14:55:08
 ================================================================
+✅ **Task 24: Vite + PixiJS project setup** - **COMPLETED**
+
+Successfully implemented:
+
+- ✅ **Vite config** - Configured with port 3334, proper build output directory
+- ✅ **index.html** - Updated with game structure (game-canvas, dashboard, footer, modal-root)
+- ✅ **Dark theme CSS** - `#0a1628` background, pixel-perfect rendering, grid layout, Plus Jakarta Sans font
+- ✅ **PixiJS initialization** - Working app with "Crit Commit" verification text
+- ✅ **Build verification** - All gates passed (lint, typecheck, build, test)
+- ✅ **Committed** - Changes committed and task marked complete
+
+The web UI foundation is now ready with:
+- Pixel-perfect rendering setup (`image-rendering: pixelated`)
+- Dark theme with proper layout grid
+- PixiJS app successfully initializing and rendering
+- WebSocket-ready structure for real-time game updates
+
+**Next task**: Task 25 - WebSocket client and game state store
+
+  Progress: 24 / 35 tasks done
+================================================================
+  Iteration 29 / 60 — Task 25 — SONNET — 14:58:28
+================================================================
+## ✅ Task 25 Completed: WebSocket client and game state store
+
+I have successfully implemented Task 25 with the following components:
+
+### 🔌 **WebSocket Client** (`ws-client.ts`)
+- Connects to `ws://localhost:3000` with exponential backoff reconnection
+- Handles `ServerMessage` dispatching and `ClientMessage` sending  
+- Emits connection status changes with proper error handling
+- Configurable retry limits and delay settings
+
+### 📦 **GameStore** (`store.ts`)  
+- Observable store holding current `GameState`
+- Processes `state_update` messages from WebSocket
+- `subscribe(selector, callback)` pattern for selective state watching
+- Built-in subscriptions for character, party, quests, zones, inventory, events, and settings
+- Deep equality checking to prevent unnecessary re-renders
+
+### 🔗 **Integration** (`main.ts`)
+- Connected WebSocket client and GameStore on startup
+- State change logging to console for debugging
+- Connection status display in UI
+- Debug tools available at `window.critCommit`
+
+### ✅ **Verification Gates**
+All verification gates passed successfully:
+- `npm run lint` ✅ (warnings only, no errors)  
+- `npm run typecheck` ✅ 
+- `npm run build` ✅
+- `npm test` ✅ (218 passed, 1 skipped)
+
+### 📝 **Next Task**
+Task 26: Dashboard — quest log, event feed, stats is now ready to implement.
+
+The WebSocket client and reactive game state store provide the foundation for real-time communication between the web UI and the scanner/game engine, enabling live updates of player progress, events, and game state changes.
+
+  Progress: 25 / 35 tasks done
+================================================================
+  Iteration 30 / 60 — Task 26 — SONNET — 15:03:50
+================================================================
+Error: Reached max turns (40)
+  Progress: 25 / 35 tasks done
+================================================================
+  Iteration 31 / 60 — Task 26 — SONNET — 15:10:59
+================================================================
+## ✅ Task 26 Complete: Dashboard Implementation
+
+I successfully implemented **Task 26: Dashboard — quest log, event feed, stats** from your plan. Here's what was completed:
+
+### 🎛️ **Implementation Summary**
+
+1. **✅ Dashboard Layout** (`dashboard.ts`) - Three-column grid layout with quest log, event feed, and stats panel containers
+
+2. **✅ Quest Log** (`quest-log.ts`) - Interactive component with:
+   - Progress bars for quest completion
+   - Grouping by quest type (micro, session, epic)  
+   - Real-time GameStore subscription
+   - Hover effects and visual feedback
+
+3. **✅ Event Feed** (`event-feed.ts`) - Scrolling narrative events with:
+   - Special styling for crit events (gold highlighting)
+   - Date grouping (Today, Yesterday, etc.)
+   - Fade-in animations for new events
+   - Maximum 50 events displayed
+
+4. **✅ Stats Panel** (`stats-panel.ts`) - Character information showing:
+   - Name, level, and class badge with colors
+   - XP progress bar with glow effects
+   - Materia slots (8 max) with type indicators  
+   - Equipped gear summary
+   - Real-time connection status indicator
+
+5. **✅ Integration** - All components wired into `main.ts` with reactive state management
+
+### 🧪 **Verification Results**
+- ✅ **Lint**: Passed (warnings only for console statements)
+- ✅ **TypeCheck**: Passed 
+- ✅ **Build**: Passed (all packages built successfully)
+- ✅ **Tests**: Passed (218/219 tests passed, 1 skipped)
+
+### 📝 **Files Created/Modified**
+- ✅ `packages/web-ui/src/ui/dashboard.ts` (new)
+- ✅ `packages/web-ui/src/ui/quest-log.ts` (new)  
+- ✅ `packages/web-ui/src/ui/event-feed.ts` (new)
+- ✅ `packages/web-ui/src/ui/stats-panel.ts` (new)
+- ✅ `packages/web-ui/src/main.ts` (updated)
+- ✅ `plan.md` (marked Task 26 complete)
+
+### 🎯 **Next Task**
+The next unchecked task in your plan is **Task 27: Game canvas — base camp scene and character sprites**. Run me again to continue with the next implementation step!
+
+All changes have been committed with message: `feat: add dashboard with quest log, event feed, and stats panel`
+
+  Progress: 26 / 35 tasks done
+================================================================
+  Iteration 32 / 60 — Task 27 — OPUS — 15:15:07
+================================================================
+**Task 27 complete.** All verification gates pass (lint, typecheck, build, test). Here's what was implemented:
+
+- **`scenes/scene-manager.ts`** — Manages active PixiJS scene with `setScene()`, `clear()`, and `getScene()` lifecycle methods
+- **`scenes/base-camp.ts`** — Programmatic pixel art base camp with sky gradient, clouds, ground/path, quest board with "!" icon, card table, and coffee shop with animated steam particles
+- **`sprites/character.ts`** — Class-colored character sprites (architect=blue, scout=green, artificer=orange, battlemage=purple) with idle Y-bounce animation and party member companions at 0.7x scale
+- **`main.ts`** — Wired scene manager and character sprites in place of the placeholder text
+
+  Progress: 27 / 35 tasks done
+================================================================
+  Iteration 33 / 60 — Task 28 — SONNET — 15:20:06
+================================================================
