@@ -29,8 +29,8 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 
 - [x] Task 1: Initialize git repo, monorepo, and toolchain
 - [x] Task 2: Create all workspace packages with correct dependencies
-- [ ] Task 3: Define shared TypeScript types
-- [ ] Task 4: Create starter game state, card data, and NPC decks
+- [x] Task 3: Define shared TypeScript types
+- [x] Task 4: Create starter game state, card data, and NPC decks
 - [ ] Task 5: Write tests for shared data
 - [ ] Task 6: JSONL parser with metadata extraction and security filtering
 - [ ] Task 7: Event accumulator
