@@ -1,0 +1,49 @@
+=== Crit Commit Ralph Loop ===
+Checkpoint: no-git-yet
+Max iterations: 50
+Max turns per iteration: 15
+Sonnet tasks: all except [12 13 20 27 32 33]
+Opus tasks: [12 13 20 27 32 33]
+Started: Sun Mar 15 23:56:39 EDT 2026
+
+================================================================
+  Iteration 1 / 50 — Task 1 — SONNET — 23:56:39
+================================================================
+Error: Reached max turns (15)
+  Progress: 0
+0 / 35 tasks done
+================================================================
+  Iteration 2 / 50 — Task 1 — SONNET — 23:58:03
+================================================================
+Error: Reached max turns (15)
+  Progress: 0
+0 / 35 tasks done
+================================================================
+  Iteration 3 / 50 — Task 1 — SONNET — 23:59:09
+================================================================
+Error: Reached max turns (15)
+  Progress: 0
+0 / 35 tasks done
+  STALL DETECTED: Task 1 failed 3x with Sonnet. Escalating to Opus.
+================================================================
+  Iteration 4 / 50 — Task 1 — OPUS — 00:00:10
+================================================================
+Error: Reached max turns (15)
+  Progress: 0
+0 / 35 tasks done
+  STALL DETECTED: Task 1 failed 3x with Sonnet. Escalating to Opus.
+================================================================
+  Iteration 5 / 50 — Task 1 — OPUS — 00:01:23
+================================================================
+Error: Reached max turns (15)
+  Progress: 0
+0 / 35 tasks done
+  STALL DETECTED: Task 1 failed 3x with Sonnet. Escalating to Opus.
+================================================================
+  Iteration 6 / 50 — Task 1 — OPUS — 00:03:42
+================================================================
+Error: Reached max turns (15)
+  Progress: 0
+0 / 35 tasks done
+
+KILLSWITCH at iteration 7. Stopping.

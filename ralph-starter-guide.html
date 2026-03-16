@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Ralph Starter Guide — Crit Commit</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: #0a1628;
+    color: #e2e8f0;
+    line-height: 1.7;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 2.2rem; color: #fff; margin-bottom: 0.5rem; border-bottom: 2px solid #3b82f6; padding-bottom: 0.5rem; }
+  h2 { font-size: 1.5rem; color: #93c5fd; margin-top: 2.5rem; margin-bottom: 1rem; padding-left: 0.5rem; border-left: 4px solid #3b82f6; }
+  h3 { font-size: 1.15rem; color: #bfdbfe; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  p { margin-bottom: 1rem; }
+  .subtitle { color: #94a3b8; font-size: 1.1rem; margin-bottom: 2rem; }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; background: #3b82f6; color: #fff;
+    font-weight: 700; border-radius: 50%; margin-right: 0.75rem; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .step {
+    display: flex; align-items: flex-start; margin-bottom: 1.5rem;
+    padding: 1rem; background: #0f1d32; border-radius: 8px; border: 1px solid #1e3a5f;
+  }
+  .step-content { flex: 1; }
+  .step-content p { margin-bottom: 0.5rem; }
+  .code-block {
+    position: relative; background: #1a1a2e; border: 1px solid #2d2d44;
+    border-radius: 6px; padding: 1rem; padding-right: 3.5rem; margin: 0.75rem 0;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; white-space: pre-wrap; word-break: break-all; color: #a5f3fc;
+  }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px; background: #3b82f6; color: #fff;
+    border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;
+    font-size: 0.75rem; font-family: inherit; transition: background 0.2s;
+  }
+  .copy-btn:hover { background: #2563eb; }
+  .copy-btn.copied { background: #22c55e; }
+  .warning { background: #422006; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1rem 0; color: #fde68a; }
+  .warning strong { color: #fbbf24; }
+  .success { background: #052e16; border: 1px solid #22c55e; border-radius: 8px; padding: 1rem; margin: 1rem 0; color: #bbf7d0; }
+  .success strong { color: #4ade80; }
+  .info { background: #0c1a3a; border: 1px solid #3b82f6; border-radius: 8px; padding: 1rem; margin: 1rem 0; color: #bfdbfe; }
+  .info strong { color: #60a5fa; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th { background: #1e3a5f; color: #fff; padding: 0.6rem 1rem; text-align: left; border: 1px solid #2d4a6f; }
+  td { padding: 0.5rem 1rem; border: 1px solid #1e3a5f; background: #0f1d32; }
+  .divider { border: none; height: 1px; background: linear-gradient(to right, transparent, #3b82f6, transparent); margin: 2.5rem 0; }
+  a { color: #60a5fa; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { background: #1a1a2e; padding: 2px 6px; border-radius: 3px; font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 0.85rem; color: #a5f3fc; }
+  .toc { background: #0f1d32; border: 1px solid #1e3a5f; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; }
+  .toc a { display: block; padding: 0.3rem 0; }
+  .phase-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .phase-test { background: #7c3aed; color: #fff; }
+  .phase-real { background: #3b82f6; color: #fff; }
+</style>
+</head>
+<body>
+
+<h1>Full Ralph Starter Guide</h1>
+<p class="subtitle">Crit Commit: A Claude Code RPG — Overnight Build Setup</p>
+
+<div class="warning">
+  <strong>Important lesson learned:</strong> Never paste multi-line bash loops directly into the terminal — line breaks cause arguments to split and commands to fail. This guide uses <strong>script files</strong> for anything multi-line. You paste single-line commands only.
+</div>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <a href="#part1">Part 1: Test Run (verify everything works)</a>
+  <a href="#part2">Part 2: Launch Crit Commit Build (the real deal)</a>
+  <a href="#part3">Part 3: Monitoring &amp; Safety Controls</a>
+  <a href="#part4">Part 4: Morning After — Verification Checklist</a>
+</div>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- PART 1: TEST RUN -->
+<!-- ============================================================ -->
+
+<h2 id="part1"><span class="phase-tag phase-test">Test</span> Part 1: Test Run</h2>
+<p>Before launching the real build, let's do a tiny test to make sure your API key works, <code>claude -p</code> runs correctly, and the loop functions. This creates a throwaway test project.</p>
+
+<h3>Step 1: Set up a test directory</h3>
+
+<div class="step">
+  <span class="step-number">1</span>
+  <div class="step-content">
+    <p>Open a new WSL terminal. Create a temporary test project:</p>
+    <div class="code-block" id="cmd1">cd /tmp && rm -rf ralph-test && mkdir ralph-test && cd ralph-test && git init<button class="copy-btn" onclick="copyCode('cmd1')">Copy</button></div>
+  </div>
+</div>
+
+<h3>Step 2: Set your API key</h3>
+
+<div class="step">
+  <span class="step-number">2</span>
+  <div class="step-content">
+    <p>Replace <code>sk-ant-YOUR-KEY-HERE</code> with your actual key:</p>
+    <div class="code-block" id="cmd2">export ANTHROPIC_API_KEY=sk-ant-YOUR-KEY-HERE<button class="copy-btn" onclick="copyCode('cmd2')">Copy</button></div>
+    <div class="warning">
+      <strong>Where to get your API key:</strong> <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a>. You need billing set up with credits loaded. <strong>Never share your key in chat sessions.</strong>
+    </div>
+  </div>
+</div>
+
+<h3>Step 3: Verify the API key works</h3>
+
+<div class="step">
+  <span class="step-number">3</span>
+  <div class="step-content">
+    <p>Run a single headless Claude call:</p>
+    <div class="code-block" id="cmd3">claude -p "Say exactly: RALPH TEST SUCCESSFUL" --max-turns 1 --model claude-sonnet-4-20250514<button class="copy-btn" onclick="copyCode('cmd3')">Copy</button></div>
+    <div class="success">
+      <strong>Expected:</strong> Output containing "RALPH TEST SUCCESSFUL". If you get an auth error, your API key is wrong or has no credits.
+    </div>
+  </div>
+</div>
+
+<h3>Step 4: Create the test plan</h3>
+
+<div class="step">
+  <span class="step-number">4</span>
+  <div class="step-content">
+    <p>Create a tiny 3-task plan. Paste this <strong>one command at a time</strong> — this is a single-line heredoc that pastes cleanly:</p>
+    <div class="code-block" id="cmd4">cat > plan.md << 'EOF'
+# Test Plan
+- [ ] Task 1: Create a package.json with name "ralph-test" and version "1.0.0"
+- [ ] Task 2: Create src/hello.js that exports a function hello() returning "Hello from Ralph!"
+- [ ] Task 3: Create src/hello.test.js that tests the hello function and run it with node to verify
+EOF<button class="copy-btn" onclick="copyCode('cmd4')">Copy</button></div>
+    <p>Verify it was created:</p>
+    <div class="code-block" id="cmd4b">cat plan.md<button class="copy-btn" onclick="copyCode('cmd4b')">Copy</button></div>
+  </div>
+</div>
+
+<h3>Step 5: Create the test loop script</h3>
+
+<div class="step">
+  <span class="step-number">5</span>
+  <div class="step-content">
+    <p>Instead of pasting a loop directly, we create a script file. This avoids all line-break issues:</p>
+    <div class="code-block" id="cmd5">cat > run-test.sh << 'SCRIPT'
+#!/usr/bin/env bash
+set -uo pipefail
+for i in 1 2 3 4 5; do
+  echo "=== Iteration $i ==="
+  FIRST_LINE=$(head -1 plan.md 2>/dev/null)
+  if [ "$FIRST_LINE" = "STATUS: COMPLETE" ]; then
+    echo "COMPLETE! All tasks done."
+    break
+  fi
+  claude -p "Read plan.md. Find the next unchecked task (- [ ]). Do ONLY that task. Mark it - [x] in plan.md when done. Commit changes. If ALL tasks are checked, add STATUS: COMPLETE as the very first line of plan.md." --allowedTools "Bash,Read,Write,Edit" --max-turns 10 --model claude-sonnet-4-20250514
+  echo ""
+  DONE=$(grep -c '^\- \[x\]' plan.md 2>/dev/null || echo 0)
+  TOTAL=$(grep -c '^\- \[' plan.md 2>/dev/null || echo 0)
+  echo "Progress: $DONE / $TOTAL tasks"
+  echo ""
+  sleep 2
+done
+SCRIPT<button class="copy-btn" onclick="copyCode('cmd5')">Copy</button></div>
+  </div>
+</div>
+
+<h3>Step 6: Run the test</h3>
+
+<div class="step">
+  <span class="step-number">6</span>
+  <div class="step-content">
+    <p>Execute the script. This should complete 3 tasks in about 3-5 minutes:</p>
+    <div class="code-block" id="cmd6">bash run-test.sh<button class="copy-btn" onclick="copyCode('cmd6')">Copy</button></div>
+    <div class="info">
+      <strong>What to watch for:</strong> You should see Claude creating files, running commands, and checking off tasks. Each iteration should show increasing progress (1/3, 2/3, 3/3).
+    </div>
+  </div>
+</div>
+
+<h3>Step 7: Verify test results</h3>
+
+<div class="step">
+  <span class="step-number">7</span>
+  <div class="step-content">
+    <p>Create and run the verification script:</p>
+    <div class="code-block" id="cmd7">cat > verify.sh << 'SCRIPT'
+#!/usr/bin/env bash
+echo "=== RALPH TEST VERIFICATION ==="
+echo ""
+echo "1. Plan status (line 1):"
+head -1 plan.md
+echo ""
+echo "2. Checked tasks:"
+grep '^\- \[x\]' plan.md || echo "  NONE (problem!)"
+echo ""
+echo "3. Unchecked tasks:"
+grep '^\- \[ \]' plan.md || echo "  NONE (all done!)"
+echo ""
+echo "4. Files created:"
+ls -la src/ 2>/dev/null || echo "  No src/ directory (problem!)"
+echo ""
+echo "5. package.json:"
+cat package.json 2>/dev/null | head -5 || echo "  No package.json (problem!)"
+echo ""
+echo "6. Git commits:"
+git log --oneline 2>/dev/null | head -5 || echo "  No commits (problem!)"
+echo ""
+echo "7. Test run:"
+node src/hello.test.js 2>/dev/null || node src/hello.test.mjs 2>/dev/null || echo "  Test file not found or failed"
+echo ""
+echo "=== END VERIFICATION ==="
+SCRIPT
+bash verify.sh<button class="copy-btn" onclick="copyCode('cmd7')">Copy</button></div>
+    <div class="success">
+      <strong>What you should see:</strong>
+      <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+        <li>Line 1 shows "STATUS: COMPLETE"</li>
+        <li>All 3 tasks checked as <code>[x]</code></li>
+        <li>No unchecked tasks</li>
+        <li>Files exist in src/</li>
+        <li>package.json with name "ralph-test"</li>
+        <li>3 git commits</li>
+        <li>Test passes</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<h3>Step 8: Clean up</h3>
+
+<div class="step">
+  <span class="step-number">8</span>
+  <div class="step-content">
+    <div class="code-block" id="cmd8">cd /tmp && rm -rf ralph-test && echo "Cleaned up."<button class="copy-btn" onclick="copyCode('cmd8')">Copy</button></div>
+  </div>
+</div>
+
+<div class="success">
+  <strong>If all checks passed, Ralph is working!</strong> Proceed to Part 2.
+</div>
+
+<div class="warning">
+  <strong>If something failed:</strong> Copy the FULL output of the verification (Step 7) and paste it to me in Claude Code. I'll diagnose the issue.
+</div>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- PART 2: REAL BUILD -->
+<!-- ============================================================ -->
+
+<h2 id="part2"><span class="phase-tag phase-real">Build</span> Part 2: Launch Crit Commit Build</h2>
+
+<div class="warning">
+  <strong>Lessons learned from first attempt:</strong>
+  <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+    <li>The default 15 max turns was not enough for large tasks. The script now uses <strong>40 max turns</strong>.</li>
+    <li>Use <strong>60 iterations</strong> (not 50) for overnight runs — gives 25 retries beyond the 35 tasks. Unused iterations cost nothing.</li>
+    <li>If you edit ralph-loop.sh while the loop is running, you must <strong>stop and restart</strong> — the running script uses the old values until restarted.</li>
+    <li>If the loop stalls on partial work, <strong>clean up partial files before restarting</strong> — ask Claude Code in a separate session to clean the state.</li>
+  </ul>
+</div>
+
+<h3>Step 1: Navigate to the project</h3>
+
+<div class="step">
+  <span class="step-number">1</span>
+  <div class="step-content">
+    <div class="code-block" id="cmd-r1">cd /mnt/c/projects/RPG<button class="copy-btn" onclick="copyCode('cmd-r1')">Copy</button></div>
+  </div>
+</div>
+
+<h3>Step 2: Set your API key</h3>
+
+<div class="step">
+  <span class="step-number">2</span>
+  <div class="step-content">
+    <div class="code-block" id="cmd-r2">export ANTHROPIC_API_KEY=sk-ant-YOUR-KEY-HERE<button class="copy-btn" onclick="copyCode('cmd-r2')">Copy</button></div>
+  </div>
+</div>
+
+<h3>Step 3: Pre-flight check</h3>
+
+<div class="step">
+  <span class="step-number">3</span>
+  <div class="step-content">
+    <p>Create and run the pre-flight check:</p>
+    <div class="code-block" id="cmd-r3">cat > preflight.sh << 'SCRIPT'
+#!/usr/bin/env bash
+echo "=== Pre-flight Check ==="
+echo "plan.md: $(test -f plan.md && echo 'OK' || echo 'MISSING!')"
+echo "ralph-loop.sh: $(test -f ralph-loop.sh && echo 'OK' || echo 'MISSING!')"
+echo "CLAUDE.md: $(test -f CLAUDE.md && echo 'OK' || echo 'MISSING!')"
+echo "Detailed plan: $(test -f docs/superpowers/plans/2026-03-15-crit-commit-implementation.md && echo 'OK' || echo 'MISSING!')"
+echo "Design spec: $(test -f docs/superpowers/specs/2026-03-15-crit-commit-design.md && echo 'OK' || echo 'MISSING!')"
+echo "API key set: $(test -n "${ANTHROPIC_API_KEY:-}" && echo 'OK' || echo 'NOT SET!')"
+echo "Claude CLI: $(which claude 2>/dev/null || echo 'NOT FOUND!')"
+echo "Tasks in plan: $(grep -c '^\- \[ \]' plan.md 2>/dev/null || echo 0)"
+echo "==========================="
+SCRIPT
+bash preflight.sh<button class="copy-btn" onclick="copyCode('cmd-r3')">Copy</button></div>
+    <div class="success">
+      <strong>All should say OK.</strong> Tasks should be 35. Fix anything that says MISSING or NOT SET before proceeding.
+    </div>
+  </div>
+</div>
+
+<h3>Step 4: Launch the overnight build</h3>
+
+<div class="step">
+  <span class="step-number">4</span>
+  <div class="step-content">
+    <p>This is it. This runs for several hours autonomously:</p>
+    <div class="code-block" id="cmd-r4">bash ralph-loop.sh 60<button class="copy-btn" onclick="copyCode('cmd-r4')">Copy</button></div>
+    <div class="info">
+      <strong>What happens now:</strong>
+      <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+        <li>Loop reads plan.md, implements one task per iteration</li>
+        <li>40 max turns per iteration (enough for the largest tasks)</li>
+        <li>60 max iterations (35 tasks + 25 buffer for retries)</li>
+        <li>Most tasks use Sonnet. Tasks 12, 13, 20, 27, 32, 33 auto-use Opus</li>
+        <li>If a task fails 3x on Sonnet, it auto-escalates to Opus</li>
+        <li>Each iteration takes 1-5 minutes</li>
+        <li>35 tasks = roughly 3-6 hours total</li>
+        <li>Logs to <code>.ralph/ralph-*.log</code></li>
+        <li>Stops automatically when complete — unused iterations cost nothing</li>
+      </ul>
+    </div>
+    <div class="warning">
+      <strong>Keep this terminal open!</strong> If you close it, the build stops. Use tmux (see below) to detach safely.
+    </div>
+  </div>
+</div>
+
+<h3>Optional: Run in tmux (close terminal safely)</h3>
+
+<div class="step">
+  <span class="step-number">*</span>
+  <div class="step-content">
+    <p>Start tmux first, then launch inside it:</p>
+    <div class="code-block" id="cmd-tmux1">tmux new -s ralph<button class="copy-btn" onclick="copyCode('cmd-tmux1')">Copy</button></div>
+    <p>Then inside tmux:</p>
+    <div class="code-block" id="cmd-tmux2">cd /mnt/c/projects/RPG && export ANTHROPIC_API_KEY=sk-ant-YOUR-KEY-HERE && bash ralph-loop.sh 60<button class="copy-btn" onclick="copyCode('cmd-tmux2')">Copy</button></div>
+    <p>To detach (terminal keeps running): press <code>Ctrl+B</code> then <code>D</code></p>
+    <p>To reconnect later:</p>
+    <div class="code-block" id="cmd-tmux3">tmux attach -t ralph<button class="copy-btn" onclick="copyCode('cmd-tmux3')">Copy</button></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- PART 3: MONITORING -->
+<!-- ============================================================ -->
+
+<h2 id="part3">Part 3: Monitoring &amp; Safety Controls</h2>
+<p>All of these run from a <strong>separate terminal</strong> while the build runs.</p>
+
+<h3>Check progress</h3>
+
+<div class="step">
+  <span class="step-number">A</span>
+  <div class="step-content">
+    <div class="code-block" id="cmd-m1">cd /mnt/c/projects/RPG && echo "Done: $(grep -c '^\- \[x\]' plan.md 2>/dev/null || echo 0) / $(grep -c '^\- \[' plan.md 2>/dev/null || echo 0)" && echo "" && echo "Next:" && grep -m1 '^\- \[ \]' plan.md 2>/dev/null && echo "" && echo "Recent commits:" && git log --oneline 2>/dev/null | head -3<button class="copy-btn" onclick="copyCode('cmd-m1')">Copy</button></div>
+  </div>
+</div>
+
+<h3>Emergency stop</h3>
+
+<div class="step">
+  <span class="step-number">B</span>
+  <div class="step-content">
+    <p>Stop immediately:</p>
+    <div class="code-block" id="cmd-m2">touch /mnt/c/projects/RPG/.ralph/KILLSWITCH<button class="copy-btn" onclick="copyCode('cmd-m2')">Copy</button></div>
+    <p>Resume later:</p>
+    <div class="code-block" id="cmd-m3">rm /mnt/c/projects/RPG/.ralph/KILLSWITCH<button class="copy-btn" onclick="copyCode('cmd-m3')">Copy</button></div>
+    <p>Then re-run <code>bash ralph-loop.sh 50</code> — it picks up where it left off.</p>
+  </div>
+</div>
+
+<h3>View live logs</h3>
+
+<div class="step">
+  <span class="step-number">C</span>
+  <div class="step-content">
+    <div class="code-block" id="cmd-m4">tail -f /mnt/c/projects/RPG/.ralph/ralph-*.log<button class="copy-btn" onclick="copyCode('cmd-m4')">Copy</button></div>
+  </div>
+</div>
+
+<h3>Cost estimate</h3>
+
+<div class="step">
+  <span class="step-number">D</span>
+  <div class="step-content">
+    <p>Check usage: <a href="https://console.anthropic.com/settings/billing" target="_blank">console.anthropic.com/settings/billing</a></p>
+    <table>
+      <tr><th>Model</th><th>Est. Per Task</th><th>Tasks</th><th>Subtotal</th></tr>
+      <tr><td>Sonnet (29 tasks)</td><td>~$0.50-1.50</td><td>29</td><td>~$15-44</td></tr>
+      <tr><td>Opus (6 tasks)</td><td>~$2.00-6.00</td><td>6</td><td>~$12-36</td></tr>
+      <tr><td>Fix-up iterations</td><td>varies</td><td>~10-25</td><td>~$5-25</td></tr>
+      <tr><th colspan="3">Estimated Total (40 turns/iter)</th><th>$32-105</th></tr>
+    </table>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- PART 4: VERIFICATION -->
+<!-- ============================================================ -->
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3>Task keeps failing / "Reached max turns"</h3>
+<div class="step">
+  <span class="step-number">!</span>
+  <div class="step-content">
+    <p>If the same task fails repeatedly, it means the task needs more turns than allowed. Stop the loop, increase max turns, clean up partial work, and restart:</p>
+    <div class="code-block" id="cmd-t1">touch /mnt/c/projects/RPG/.ralph/KILLSWITCH<button class="copy-btn" onclick="copyCode('cmd-t1')">Copy</button></div>
+    <p>Wait for the loop to stop in your terminal. Then increase max turns by editing ralph-loop.sh — find <code>MAX_TURNS=</code> and increase the number. Then clean partial files, remove killswitch, and relaunch:</p>
+    <div class="code-block" id="cmd-t2">rm /mnt/c/projects/RPG/.ralph/KILLSWITCH<button class="copy-btn" onclick="copyCode('cmd-t2')">Copy</button></div>
+    <div class="code-block" id="cmd-t3">bash ralph-loop.sh 50<button class="copy-btn" onclick="copyCode('cmd-t3')">Copy</button></div>
+    <div class="warning">
+      <strong>Important:</strong> If you edit ralph-loop.sh while it's running, the changes do NOT take effect until you stop and restart the script. The running bash process uses the values it loaded at startup.
+    </div>
+  </div>
+</div>
+
+<h3>Loop won't stop after killswitch</h3>
+<div class="step">
+  <span class="step-number">!</span>
+  <div class="step-content">
+    <p>The killswitch is checked <strong>between</strong> iterations, not during. The current <code>claude -p</code> call must finish first (up to 60 seconds). If it's truly stuck, press <code>Ctrl+C</code> in the terminal running the loop.</p>
+  </div>
+</div>
+
+<h3>Need to restart from scratch after partial failures</h3>
+<div class="step">
+  <span class="step-number">!</span>
+  <div class="step-content">
+    <p>If early tasks left partial files that confuse later attempts, ask Claude Code (in a separate interactive session) to clean up the partial state. Then reset the checkboxes in plan.md for the failed tasks and relaunch.</p>
+  </div>
+</div>
+
+<h3>API key or billing error</h3>
+<div class="step">
+  <span class="step-number">!</span>
+  <div class="step-content">
+    <p>If you see auth errors in the log, your key may have expired or run out of credits. Check <a href="https://console.anthropic.com/settings/billing" target="_blank">console.anthropic.com/settings/billing</a>. Set the new key and relaunch — the loop picks up from the last unchecked task.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<h2 id="part4">Part 4: Morning After — Verification</h2>
+<p>When the loop finishes (or in the morning), run this. Copy the full output and paste it to me.</p>
+
+<div class="step">
+  <span class="step-number">1</span>
+  <div class="step-content">
+    <p>Create and run the verification script:</p>
+    <div class="code-block" id="cmd-v1">cat > /mnt/c/projects/RPG/post-build-verify.sh << 'SCRIPT'
+#!/usr/bin/env bash
+cd /mnt/c/projects/RPG
+echo "============================================="
+echo "  CRIT COMMIT — POST-BUILD VERIFICATION"
+echo "  $(date)"
+echo "============================================="
+echo ""
+echo "--- 1. PLAN STATUS ---"
+head -3 plan.md
+echo ""
+echo "--- 2. TASK COMPLETION ---"
+DONE=$(grep -c '^\- \[x\]' plan.md 2>/dev/null || echo 0)
+TODO=$(grep -c '^\- \[ \]' plan.md 2>/dev/null || echo 0)
+echo "Completed: $DONE"
+echo "Remaining: $TODO"
+if [ "$TODO" -gt 0 ]; then
+  echo "Unchecked:"
+  grep '^\- \[ \]' plan.md
+fi
+echo ""
+echo "--- 3. GIT HISTORY ---"
+git log --oneline | head -20
+echo "Total commits: $(git rev-list --count HEAD 2>/dev/null || echo 0)"
+echo ""
+echo "--- 4. PROJECT STRUCTURE ---"
+ls packages/ 2>/dev/null || echo "No packages/"
+echo ""
+for pkg in shared scanner game-engine web-ui cli; do
+  COUNT=$(find packages/$pkg/src -name '*.ts' 2>/dev/null | wc -l)
+  echo "  packages/$pkg/src: $COUNT .ts files"
+done
+echo ""
+echo "--- 5. DEPENDENCIES ---"
+test -d node_modules && echo "node_modules: EXISTS" || echo "node_modules: MISSING"
+echo ""
+echo "--- 6. LINT ---"
+npm run lint 2>&1 | tail -5
+echo "Exit code: $?"
+echo ""
+echo "--- 7. TYPECHECK ---"
+npm run typecheck 2>&1 | tail -5
+echo "Exit code: $?"
+echo ""
+echo "--- 8. BUILD ---"
+npm run build 2>&1 | tail -10
+echo "Exit code: $?"
+echo ""
+echo "--- 9. TESTS ---"
+npm test 2>&1 | tail -20
+echo "Exit code: $?"
+echo ""
+echo "--- 10. CLI ---"
+node packages/cli/dist/index.js --help 2>&1 | head -10 || echo "CLI not working"
+echo ""
+echo "--- 11. KEY FILES ---"
+for f in package.json tsconfig.json tsconfig.base.json eslint.config.js vitest.config.ts CLAUDE.md README.md LICENSE plan.md; do
+  test -f "$f" && echo "  $f: OK" || echo "  $f: MISSING"
+done
+echo ""
+echo "--- 12. WEB UI ---"
+test -f packages/web-ui/dist/index.html && echo "  web-ui dist: OK" || echo "  web-ui dist: MISSING"
+echo ""
+echo "--- 13. RALPH LOG ---"
+LOG=$(ls -t .ralph/ralph-*.log 2>/dev/null | head -1)
+if [ -n "$LOG" ]; then
+  echo "  Log: $LOG"
+  echo "  Lines: $(wc -l < "$LOG")"
+  echo "  Errors: $(grep -ci 'error\|FAILED' "$LOG" 2>/dev/null || echo 0)"
+  tail -3 "$LOG"
+else
+  echo "  No log found"
+fi
+echo ""
+echo "============================================="
+echo "  VERIFICATION COMPLETE"
+echo "============================================="
+SCRIPT
+bash /mnt/c/projects/RPG/post-build-verify.sh<button class="copy-btn" onclick="copyCode('cmd-v1')">Copy</button></div>
+  </div>
+</div>
+
+<div class="success">
+  <strong>Copy the ENTIRE output</strong> and paste it to me in Claude Code. I'll review every section and tell you the status.
+</div>
+
+<h3>Quick-check table</h3>
+
+<table>
+  <tr><th>Check</th><th>Good</th><th>Problem</th></tr>
+  <tr><td>Plan line 1</td><td>STATUS: COMPLETE</td><td>Still has unchecked tasks</td></tr>
+  <tr><td>Tasks</td><td>35/35</td><td>Less than 35</td></tr>
+  <tr><td>Commits</td><td>35+</td><td>Few or none</td></tr>
+  <tr><td>Lint</td><td>Exit code 0</td><td>Errors</td></tr>
+  <tr><td>Typecheck</td><td>Exit code 0</td><td>Errors</td></tr>
+  <tr><td>Build</td><td>Exit code 0</td><td>Failures</td></tr>
+  <tr><td>Tests</td><td>All pass</td><td>Failures</td></tr>
+  <tr><td>CLI</td><td>Shows help</td><td>"not found"</td></tr>
+  <tr><td>Web UI</td><td>index.html exists</td><td>MISSING</td></tr>
+</table>
+
+<hr class="divider">
+
+<p style="text-align: center; color: #64748b; margin-top: 2rem;">
+  Crit Commit: A Claude Code RPG — Built with the Full Ralph Wiggum Method<br>
+  <span style="font-size: 0.85rem;">Guide updated 2026-03-15</span>
+</p>
+
+<script>
+function copyCode(id) {
+  const el = document.getElementById(id);
+  const text = el.innerText.replace(/Copy$/, '').replace(/Copied!$/, '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+echo "=== Pre-flight Check ==="
+echo "plan.md: $(test -f plan.md && echo 'OK' || echo 'MISSING!')"
+echo "ralph-loop.sh: $(test -f ralph-loop.sh && echo 'OK' || echo 'MISSING!')"
+echo "CLAUDE.md: $(test -f CLAUDE.md && echo 'OK' || echo 'MISSING!')"
+echo "Detailed plan: $(test -f docs/superpowers/plans/2026-03-15-crit-commit-implementation.md && echo 'OK' || echo 'MISSING!')"
+echo "Design spec: $(test -f docs/superpowers/specs/2026-03-15-crit-commit-design.md && echo 'OK' || echo 'MISSING!')"
+echo "API key set: $(test -n "${ANTHROPIC_API_KEY:-}" && echo 'OK' || echo 'NOT SET!')"
+echo "Claude CLI: $(which claude 2>/dev/null || echo 'NOT FOUND!')"
+echo "Tasks in plan: $(grep -c '^\- \[ \]' plan.md 2>/dev/null || echo 0)"
+echo "==========================="
