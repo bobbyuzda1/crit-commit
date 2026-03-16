@@ -139,3 +139,16 @@ Error: Reached max turns (40)
 ================================================================
   Iteration 8 / 60 — Task 9 — SONNET — 13:10:15
 ================================================================
+Implementation complete. What would you like to do?
+
+1. Merge back to main locally
+2. Push and create a Pull Request
+3. Keep the branch as-is (I'll handle it later)
+4. Discard this work
+
+Which option?
+
+  Progress: 9 / 35 tasks done
+================================================================
+  Iteration 9 / 60 — Task 10 — SONNET — 13:24:31
+================================================================
