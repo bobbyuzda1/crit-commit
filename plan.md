@@ -37,8 +37,8 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 8: Micro-quest engine
 - [x] Task 9: File watcher for JSONL transcripts
 - [x] Task 10: Game state persistence manager
-- [ ] Task 11: HTTP server and WebSocket
-- [ ] Task 12: Prompt builder for Claude game engine
+- [x] Task 11: HTTP server and WebSocket
+- [x] Task 12: Prompt builder for Claude game engine
 - [ ] Task 13: Response parser and Claude invoker
 - [ ] Task 14: Progression engine — XP, leveling, crits, drops
 - [ ] Task 15: Party manager — terminal companions and sub-agent summons
