@@ -191,3 +191,83 @@ Error: Reached max turns (40)
 ================================================================
   Iteration 11 / 60 — Task 11 — SONNET — 13:34:34
 ================================================================
+## ✅ Task 11: HTTP server and WebSocket - COMPLETED!
+
+**Successfully implemented and tested:**
+
+✅ **Comprehensive tests** covering all requirements:
+- Server starts and responds to HTTP GET / with 200
+- WebSocket connections accepted and managed
+- State updates sent immediately on WebSocket connect  
+- Client messages received and acknowledged
+- Broadcasting to multiple connected clients
+- Configurable port and static directory support
+
+✅ **Full GameServer implementation** with:
+- Express app serving static files from configurable directory (web-ui dist)
+- WebSocket server (ws library) on the same HTTP server
+- Immediate GameState transmission on connection
+- ClientMessage parsing with handler callback routing
+- `pushUpdate()` method broadcasting to all connected clients  
+- Configurable port from PlayerSettings
+- Health check and API status endpoints
+- Comprehensive error handling and logging
+
+✅ **All verification gates passed:**
+- `npm run lint` ✅ (warnings expected for console statements)
+- `npm run typecheck` ✅  
+- `npm run build` ✅
+- `npm run test` ✅ (106/107 tests passed, 1 debug test skipped)
+
+✅ **Successfully committed** with descriptive message
+
+The implementation provides a robust foundation for real-time communication between the game engine and web UI, supporting the core architecture of the Crit Commit RPG.
+
+**Next task:** Task 12: Prompt builder for Claude game engine
+
+  Progress: 11 / 35 tasks done
+================================================================
+  Iteration 12 / 60 — Task 12 — OPUS — 13:38:27
+================================================================
+Task 12 complete. Created:
+
+- **`packages/game-engine/src/prompt-builder.ts`** — `buildPrompt(state, events, pendingActions)` that constructs a structured prompt for Claude as game master, including player state snapshot, batched coding events, NPC franchise naming instructions, security constraints (no real paths), and a JSON response schema covering narrative_events, encounters, xp_awards, item_drops, quest_updates, npc_names, and zone_choice.
+
+- **`packages/game-engine/src/__tests__/prompt-builder.test.ts`** — 9 tests verifying game master instructions, state inclusion, events inclusion, all 7 NPC franchises, JSON response format fields, no file path leakage, pending actions, and security instructions.
+
+All gates pass: 0 lint errors, typecheck clean, build successful, 115 tests passing.
+
+  Progress: 12 / 35 tasks done
+================================================================
+  Iteration 13 / 60 — Task 13 — OPUS — 13:41:33
+================================================================
+**Task 13 complete.** Created three files:
+
+- **`response-parser.ts`** — `parseGameEngineResponse()` parses Claude's JSON output into a typed `GameStateUpdate`, handling missing fields (defaults to empty arrays/null), malformed JSON (graceful fallback), and markdown code fences.
+- **`claude-invoker.ts`** — `invokeClaudeEngine()` spawns `claude -p` via `child_process.execFile` with 60s timeout, returns stdout or null on error.
+- **`response-parser.test.ts`** — 7 tests covering valid parsing, missing fields, malformed JSON, partial fields, non-array values, and code fence extraction.
+
+All gates pass: lint (0 errors), typecheck, build, and 122 tests.
+
+  Progress: 13 / 35 tasks done
+================================================================
+  Iteration 14 / 60 — Task 14 — SONNET — 13:45:04
+================================================================
+Error: Reached max turns (40)
+  Progress: 13 / 35 tasks done
+================================================================
+  Iteration 15 / 60 — Task 14 — SONNET — 13:50:35
+================================================================
+Implementation complete. What would you like to do?
+
+1. Merge back to master locally
+2. Push and create a Pull Request  
+3. Keep the branch as-is (I'll handle it later)
+4. Discard this work
+
+Which option?
+
+  Progress: 14 / 35 tasks done
+================================================================
+  Iteration 16 / 60 — Task 15 — SONNET — 13:54:04
+================================================================
