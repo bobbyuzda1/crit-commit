@@ -284,3 +284,60 @@ Which option?
 ================================================================
   Iteration 17 / 60 — Task 16 — SONNET — 13:59:08
 ================================================================
+## Task 16 Complete ✅
+
+I have successfully implemented the **Zone Manager** for Crit Commit! Here's what was accomplished:
+
+### Files Created:
+- `packages/game-engine/src/zone-manager.ts` - Complete zone management implementation
+- `packages/game-engine/src/__tests__/zone-manager.test.ts` - Comprehensive test suite (15 tests)
+
+### Key Features Implemented:
+1. **Zone Unlock Detection** (`checkZoneUnlock`) - Triggers when any language/tool reaches 50 uses
+2. **Zone Limit Enforcement** (`enforceZoneLimit`) - Archives oldest zone when at 7 total zones (6 dynamic + base camp)
+3. **Zone Archiving** (`archiveZone`) - Deactivates zones but protects base camp from archiving
+4. **Active Zone Management** (`getActiveZones`) - Returns only active zones with limit enforcement
+5. **Zone Creation** (`applyZoneChoice`) - Adds new zones and updates game stats
+
+### Verification Results:
+- ✅ **ESLint**: Passed (fixed unused variable)
+- ✅ **TypeScript**: Passed all type checks
+- ✅ **Build**: All packages built successfully 
+- ✅ **Tests**: 160 passed, 1 skipped - all zone manager tests passing
+- ✅ **Committed**: `feat: add zone manager with unlock triggers, limits, and archiving`
+
+The zone manager now handles the complete lifecycle of zone unlocking, limiting (max 6 dynamic + base camp), and archiving oldest zones when needed. Base camp is permanently protected from archiving, and zone choices generate unique IDs with level-scaled properties.
+
+**Next task:** Task 17 - Stackjack core engine (match loop and basic cards)
+
+  Progress: 16 / 35 tasks done
+================================================================
+  Iteration 18 / 60 — Task 17 — SONNET — 14:05:57
+================================================================
+Error: Reached max turns (40)
+  Progress: 17 / 35 tasks done
+================================================================
+  Iteration 19 / 60 — Task 18 — SONNET — 14:11:56
+================================================================
+Error: Reached max turns (40)
+  Progress: 17 / 35 tasks done
+================================================================
+  Iteration 20 / 60 — Task 18 — SONNET — 14:18:39
+================================================================
+Error: Reached max turns (40)
+  Progress: 17 / 35 tasks done
+================================================================
+  Iteration 21 / 60 — Task 18 — SONNET — 14:26:07
+================================================================
+Error: Reached max turns (40)
+  Progress: 17 / 35 tasks done
+  STALL DETECTED: Task 18 failed 3x with Sonnet. Escalating to Opus.
+================================================================
+  Iteration 22 / 60 — Task 18 — OPUS — 14:32:00
+================================================================
+**Task 18 complete.** Stackjack special card effects (Fork, Null, Rebase, Merge, Recursive, Crit Card, Overflow) and NPC AI with 3 difficulty tiers are implemented and all 218 tests pass. Fixed one flaky test that expected deterministic behavior from a random NPC strategy.
+
+  Progress: 18 / 35 tasks done
+================================================================
+  Iteration 23 / 60 — Task 19 — SONNET — 14:35:28
+================================================================
