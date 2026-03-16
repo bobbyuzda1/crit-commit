@@ -129,7 +129,9 @@ for i in $(seq 1 "$MAX"); do
 
   # Run Claude headlessly
   ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" claude -p \
-    "You are building Crit Commit: A Claude Code RPG. Read plan.md to find the task checklist. Read docs/superpowers/plans/2026-03-15-crit-commit-implementation.md for detailed instructions on each task. Find the NEXT unchecked task (- [ ]). Implement ONLY that one task following the detailed instructions. After implementation, run verification gates: npm run lint && npm run typecheck && npm run build && npm test. Fix any failures. Mark completed steps as - [x] in plan.md. Commit your changes with a descriptive message. If ALL tasks are now checked off, add the text STATUS: COMPLETE as the very first line of plan.md (before everything else)." \
+    "You are building Crit Commit: A Claude Code RPG. You are running in HEADLESS MODE — there is NO human to answer questions. NEVER ask clarifying questions. Make your best judgment and keep building.
+
+Read plan.md to find the task checklist. Read docs/superpowers/plans/2026-03-15-crit-commit-implementation.md for detailed instructions on each task. Find the NEXT unchecked task (- [ ]). Implement ONLY that one task following the detailed instructions. If anything is ambiguous, make a reasonable decision and proceed — do not stop to ask. After implementation, run verification gates: npm run lint && npm run typecheck && npm run build && npm test. Fix any failures. Mark completed steps as - [x] in plan.md. Commit your changes with a descriptive message. If ALL tasks are now checked off, add the text STATUS: COMPLETE as the very first line of plan.md (before everything else)." \
     --allowedTools "$ALLOWED" \
     --max-turns "$MAX_TURNS" \
     --model "$MODEL" \
