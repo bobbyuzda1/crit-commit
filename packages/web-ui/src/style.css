@@ -13,10 +13,11 @@ body {
   height: 100vh;
   display: grid;
   grid-template-areas:
-    "game-canvas dashboard"
-    "footer footer";
-  grid-template-columns: 1fr 300px;
-  grid-template-rows: 1fr auto;
+    "game-canvas"
+    "dashboard"
+    "footer";
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto auto;
   overflow: hidden;
 }
 
@@ -24,6 +25,7 @@ body {
   grid-area: game-canvas;
   position: relative;
   overflow: hidden;
+  min-height: 300px;
 }
 
 #game-canvas canvas {
@@ -31,19 +33,22 @@ body {
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
   display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 #dashboard {
   grid-area: dashboard;
-  background: rgba(15, 23, 42, 0.9);
-  border-left: 1px solid #334155;
-  padding: 1rem;
+  background: rgba(15, 23, 42, 0.95);
+  border-top: 1px solid #334155;
+  padding: 0.5rem;
   overflow-y: auto;
+  max-height: 280px;
 }
 
 #footer {
   grid-area: footer;
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15, 23, 42, 0.95);
   border-top: 1px solid #334155;
   padding: 0.5rem 1rem;
   text-align: center;

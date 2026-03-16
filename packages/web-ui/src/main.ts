@@ -105,14 +105,14 @@ async function init() {
 
   // Initialize PixiJS Application
   const app = new Application();
+  const gameCanvasDiv = document.getElementById("game-canvas");
   await app.init({
     background: "#0a1628",
-    resizeTo: window,
+    resizeTo: gameCanvasDiv || undefined,
     antialias: false,
   });
 
   // Append canvas to game-canvas div
-  const gameCanvasDiv = document.getElementById("game-canvas");
   if (gameCanvasDiv) {
     gameCanvasDiv.appendChild(app.canvas);
   }
