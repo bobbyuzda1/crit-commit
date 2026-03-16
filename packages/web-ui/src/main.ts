@@ -10,6 +10,8 @@ import { SceneManager } from "./scenes/scene-manager.js";
 import { createBaseCampScene } from "./scenes/base-camp.js";
 import { createCharacterSprite, createPartyMemberSprite } from "./sprites/character.js";
 import { CritEffectManager } from "./effects/crit-effect.js";
+import { Footer } from "./ui/footer.js";
+import { CoffeeShopModal } from "./ui/coffee-shop-modal.js";
 
 async function init() {
   console.log("🎮 Initializing Crit Commit Web UI...");
@@ -31,6 +33,10 @@ async function init() {
   // Initialize WebSocket client
   const wsClient = createWSClient();
   console.log("🔌 WebSocket client created");
+
+  // Initialize Footer
+  const footer = new Footer("#footer", wsClient);
+  console.log("🦶 Footer initialized");
 
   // Connect WebSocket message handling to game store
   wsClient.onMessage((message) => {
@@ -57,6 +63,9 @@ async function init() {
 
     // Update stats panel connection status
     statsPanel.setConnectionStatus(status.status);
+
+    // Update footer connection status
+    footer.setConnectionStatus(status.status);
   });
 
   // Subscribe to key game state changes for logging
@@ -104,7 +113,7 @@ async function init() {
   // Set up scene manager and load base camp
   const sceneManager = new SceneManager(app);
   const baseCampScene = createBaseCampScene(app, () => {
-    console.log("Coffee shop clicked — modal will be wired in Task 30");
+    CoffeeShopModal.open();
   });
   sceneManager.setScene(baseCampScene);
   console.log("🏕️ Base camp scene loaded");
@@ -147,7 +156,8 @@ async function init() {
       questLog,
       eventFeed,
       statsPanel
-    }
+    },
+    footer
   };
 
   console.log("✅ Crit Commit Web UI initialized successfully");

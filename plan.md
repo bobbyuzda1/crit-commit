@@ -55,8 +55,8 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 26: Dashboard — quest log, event feed, stats
 - [x] Task 27: Game canvas — base camp scene and character sprites
 - [x] Task 28: Crit animation and particle effects
-- [ ] Task 29: Stackjack UI
-- [ ] Task 30: Modal, settings, footer, and coffee shop
+- [x] Task 29: Stackjack UI
+- [x] Task 30: Modal, settings, footer, and coffee shop
 - [ ] Task 31: Zone choice UI and world map
 - [ ] Task 32: End-to-end integration wiring
 - [ ] Task 33: README and game documentation
