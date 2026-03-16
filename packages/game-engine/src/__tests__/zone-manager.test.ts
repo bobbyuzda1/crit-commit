@@ -1,0 +1,247 @@
+import { describe, it, expect } from "vitest";
+import { checkZoneUnlock, enforceZoneLimit, archiveZone, getActiveZones, applyZoneChoice } from "../zone-manager.js";
+import { createStarterState, CharacterClass, Zone } from "@crit-commit/shared";
+import { ZONES } from "@crit-commit/shared";
+
+// Helper to create a mock zone for testing
+function createMockZone(id: string, name: string, isActive = true): Zone {
+  return {
+    id,
+    name,
+    description: `Mock zone: ${name}`,
+    isUnlocked: true,
+    isActive,
+    level: 1,
+    theme: "test",
+    npcs: [],
+    encounters: [],
+    unlockedAt: new Date().toISOString(),
+  };
+}
+
+describe("checkZoneUnlock", () => {
+  it("returns true when language activity exceeds unlock threshold", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const languageActivity = {
+      typescript: 55, // Above threshold of 50
+      python: 30,     // Below threshold
+    };
+
+    const result = checkZoneUnlock(state, languageActivity);
+    expect(result).toBe(true);
+  });
+
+  it("returns true when tool activity exceeds unlock threshold", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const languageActivity = {
+      bash: 60,      // Tool activity above threshold
+      javascript: 25, // Below threshold
+    };
+
+    const result = checkZoneUnlock(state, languageActivity);
+    expect(result).toBe(true);
+  });
+
+  it("returns false when no activity exceeds threshold", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const languageActivity = {
+      typescript: 25,  // Below threshold
+      python: 15,      // Below threshold
+      bash: 30,        // Below threshold
+    };
+
+    const result = checkZoneUnlock(state, languageActivity);
+    expect(result).toBe(false);
+  });
+
+  it("returns false with empty activity", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const languageActivity = {};
+
+    const result = checkZoneUnlock(state, languageActivity);
+    expect(result).toBe(false);
+  });
+});
+
+describe("enforceZoneLimit", () => {
+  it("leaves state unchanged when under zone limit", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    // Base camp + 2 additional zones = 3 total (under limit of 7)
+    state.zones = [
+      state.zones[0], // Base camp
+      createMockZone("zone-1", "Test Zone 1"),
+      createMockZone("zone-2", "Test Zone 2"),
+    ];
+
+    const result = enforceZoneLimit(state);
+    expect(result.zones).toHaveLength(3);
+    expect(result.zones.every(z => z.isActive)).toBe(true);
+  });
+
+  it("archives oldest zone when at limit", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    // Base camp + 6 additional zones = 7 total (at limit)
+    const oldestZone = createMockZone("zone-1", "Oldest Zone");
+    oldestZone.unlockedAt = "2020-01-01T00:00:00.000Z"; // Very old
+
+    state.zones = [
+      state.zones[0], // Base camp (should never be archived)
+      oldestZone,
+      createMockZone("zone-2", "Zone 2"),
+      createMockZone("zone-3", "Zone 3"),
+      createMockZone("zone-4", "Zone 4"),
+      createMockZone("zone-5", "Zone 5"),
+      createMockZone("zone-6", "Zone 6"),
+    ];
+
+    const result = enforceZoneLimit(state);
+    expect(result.zones).toHaveLength(7);
+
+    const archivedZones = result.zones.filter(z => !z.isActive);
+    expect(archivedZones).toHaveLength(1);
+    expect(archivedZones[0].id).toBe("zone-1");
+    expect(archivedZones[0].isActive).toBe(false);
+  });
+
+  it("never archives base camp zone", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    // Base camp + 7 additional zones = 8 total (over limit)
+    const zones = [state.zones[0]]; // Base camp first
+
+    // Add 7 additional zones
+    for (let i = 1; i <= 7; i++) {
+      zones.push(createMockZone(`zone-${i}`, `Zone ${i}`));
+    }
+    state.zones = zones;
+
+    const result = enforceZoneLimit(state);
+    const baseCamp = result.zones.find(z => z.id === ZONES.BASE_CAMP.id);
+    expect(baseCamp?.isActive).toBe(true);
+  });
+});
+
+describe("archiveZone", () => {
+  it("archives specified zone by setting isActive to false", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const targetZone = createMockZone("zone-1", "Target Zone");
+    state.zones = [state.zones[0], targetZone];
+
+    const result = archiveZone(state, "zone-1");
+    const archivedZone = result.zones.find(z => z.id === "zone-1");
+
+    expect(archivedZone?.isActive).toBe(false);
+    expect(result.zones).toHaveLength(2); // Zone still exists, just archived
+  });
+
+  it("does nothing when zone ID not found", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const originalZones = [...state.zones];
+
+    const result = archiveZone(state, "non-existent-zone");
+    expect(result.zones).toEqual(originalZones);
+    expect(result.zones.every(z => z.isActive)).toBe(true);
+  });
+
+  it("cannot archive base camp zone", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+
+    const result = archiveZone(state, ZONES.BASE_CAMP.id);
+    const baseCamp = result.zones.find(z => z.id === ZONES.BASE_CAMP.id);
+
+    expect(baseCamp?.isActive).toBe(true); // Base camp remains active
+  });
+});
+
+describe("getActiveZones", () => {
+  it("returns only active zones", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const activeZone = createMockZone("zone-1", "Active Zone", true);
+    const inactiveZone = createMockZone("zone-2", "Inactive Zone", false);
+
+    state.zones = [state.zones[0], activeZone, inactiveZone];
+
+    const result = getActiveZones(state);
+    expect(result).toHaveLength(2); // Base camp + active zone
+    expect(result.every(z => z.isActive)).toBe(true);
+    expect(result.map(z => z.id)).toEqual([ZONES.BASE_CAMP.id, "zone-1"]);
+  });
+
+  it("enforces maximum of 7 zones (6 + base camp)", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const zones = [state.zones[0]]; // Base camp
+
+    // Add 8 active zones (should be limited to 6 + base camp = 7)
+    for (let i = 1; i <= 8; i++) {
+      zones.push(createMockZone(`zone-${i}`, `Zone ${i}`, true));
+    }
+    state.zones = zones;
+
+    const result = getActiveZones(state);
+    expect(result.length).toBeLessThanOrEqual(7); // MAX_ACTIVE_ZONES + 1 (base camp)
+  });
+});
+
+describe("applyZoneChoice", () => {
+  it("adds new zone to game state", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const zoneChoice = {
+      name: "Crystal Caverns",
+      description: "Shimmering underground chambers",
+      theme: "crystal",
+      modifier: "xp_bonus",
+      modifierValue: 1.2,
+    };
+
+    const result = applyZoneChoice(state, zoneChoice);
+    expect(result.zones).toHaveLength(2); // Base camp + new zone
+
+    const newZone = result.zones.find(z => z.name === "Crystal Caverns");
+    expect(newZone).toBeDefined();
+    expect(newZone?.description).toBe("Shimmering underground chambers");
+    expect(newZone?.theme).toBe("crystal");
+    expect(newZone?.isUnlocked).toBe(true);
+    expect(newZone?.isActive).toBe(true);
+    expect(newZone?.unlockedAt).toBeDefined();
+  });
+
+  it("increments zonesUnlocked stat", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const originalCount = state.stats.zonesUnlocked;
+
+    const zoneChoice = {
+      name: "Fire Peaks",
+      description: "Volcanic mountains",
+      theme: "fire",
+      modifier: "crit_chance",
+      modifierValue: 0.05,
+    };
+
+    const result = applyZoneChoice(state, zoneChoice);
+    expect(result.stats.zonesUnlocked).toBe(originalCount + 1);
+  });
+
+  it("creates unique zone IDs", () => {
+    const state = createStarterState("Hero", CharacterClass.Architect);
+    const zoneChoice1 = {
+      name: "Zone A",
+      description: "First zone",
+      theme: "forest",
+      modifier: "xp_bonus",
+      modifierValue: 1.1,
+    };
+    const zoneChoice2 = {
+      name: "Zone B",
+      description: "Second zone",
+      theme: "desert",
+      modifier: "drop_rate",
+      modifierValue: 1.15,
+    };
+
+    const result1 = applyZoneChoice(state, zoneChoice1);
+    const result2 = applyZoneChoice(result1, zoneChoice2);
+
+    const zoneIds = result2.zones.map(z => z.id);
+    const uniqueIds = new Set(zoneIds);
+    expect(uniqueIds.size).toBe(zoneIds.length); // All IDs are unique
+  });
+});
