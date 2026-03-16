@@ -571,3 +571,34 @@ All changes have been committed with message: `feat: add dashboard with quest lo
 ================================================================
   Iteration 33 / 60 — Task 28 — SONNET — 15:20:06
 ================================================================
+Task 28 has been completed successfully! ✅
+
+## Summary
+
+I implemented **crit animation and particle effects** for the Crit Commit RPG web UI:
+
+### Files Created:
+- `packages/web-ui/src/effects/particles.ts` - Reusable particle emitter system
+- `packages/web-ui/src/effects/crit-effect.ts` - Complete crit visual effects manager
+
+### Features Implemented:
+1. **Particle System**: Configurable count, colors, velocity ranges, lifetime, and gravity
+2. **Crit Effects**: 
+   - Screen shake (3-5px random for 300ms)
+   - Golden particle burst (30 particles from screen center)
+   - "CRIT!" text that scales up and fades out over 1.5s
+   - Bonus streak text for multi-crit sequences
+3. **WebSocket Integration**: Automatic triggering on `crit_trigger` server messages
+
+### Verification Results:
+- ✅ Lint: No errors (only expected console warnings)
+- ✅ TypeCheck: All packages pass
+- ✅ Build: All packages build successfully  
+- ✅ Tests: 218 tests pass, 0 failures
+
+The implementation is now committed and ready. The next task to work on would be **Task 29: Stackjack UI**.
+
+  Progress: 28 / 35 tasks done
+================================================================
+  Iteration 34 / 60 — Task 29 — SONNET — 15:23:59
+================================================================
