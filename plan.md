@@ -49,7 +49,7 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 20: Scanner orchestrator — wire everything together
 - [x] Task 21: CLI scaffold and start/status commands
 - [x] Task 22: First-run flow and character creation
-- [ ] Task 23: Reset and repair commands
+- [x] Task 23: Reset and repair commands
 - [ ] Task 24: Vite + PixiJS project setup
 - [ ] Task 25: WebSocket client and game state store
 - [ ] Task 26: Dashboard — quest log, event feed, stats
