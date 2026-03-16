@@ -602,3 +602,87 @@ The implementation is now committed and ready. The next task to work on would be
 ================================================================
   Iteration 34 / 60 — Task 29 — SONNET — 15:23:59
 ================================================================
+## ✅ Task 29: Stackjack UI - COMPLETED!
+
+I have successfully implemented the complete Stackjack card game UI as specified. Here's what was accomplished:
+
+### 🎯 Components Implemented
+
+1. **Card Renderer** - DOM-based card components with:
+   - Type color indicators and rarity border colors
+   - Interactive hover effects and tooltips
+   - Clickable functionality for gameplay
+   - Support for card backs (hidden opponent cards)
+
+2. **Deck Selector Modal** - Card collection interface with:
+   - Scrollable grid displaying all available cards
+   - 4-card selection system with visual feedback
+   - Organized by rarity and name for easy browsing
+   - WebSocket integration for sending selections
+
+3. **Match UI** - Complete Stackjack game interface featuring:
+   - Player and opponent total displays with color coding
+   - Round indicator dots (3 circles showing wins)
+   - Interactive side deck cards with click handlers
+   - Action buttons (End Turn, Stand, Flip choice +/-)
+   - Phase indicator showing current turn status
+   - Round result notifications and game completion handling
+   - Full WebSocket integration for real-time gameplay
+
+### ✅ All Verification Gates Passed
+- **Lint**: ✅ Passed (only expected console warnings in CLI tools)
+- **TypeScript**: ✅ Passed with no type errors
+- **Build**: ✅ All packages built successfully (including web-ui Vite build)
+- **Tests**: ✅ 218 tests passed, 1 skipped
+
+### 📝 Changes Committed
+```
+feat: add Stackjack card game UI with deck selector and match interface
+```
+
+**Next Task**: Task 30 - Modal, settings, footer, and coffee shop
+
+The Stackjack UI is now fully integrated with the existing architecture, follows the dark theme styling, and provides a complete card game experience with WebSocket-driven real-time gameplay!
+
+  Progress: 29 / 35 tasks done
+================================================================
+  Iteration 35 / 60 — Task 30 — SONNET — 15:30:56
+================================================================
+Error: Reached max turns (40)
+  Progress: 29 / 35 tasks done
+================================================================
+  Iteration 36 / 60 — Task 30 — SONNET — 15:36:26
+================================================================
+Excellent! ✅ **Task 30: Modal, settings, footer, and coffee shop** is now complete and committed.
+
+## Summary of Task 30 Implementation
+
+**Completed components:**
+- ✅ **Reusable Modal System** - DOM overlay with backdrop, ESC key handling, and click-to-close
+- ✅ **Settings Panel** - Batch interval slider (1-30 min) with WebSocket integration to send `update_settings`
+- ✅ **Footer Component** - Complete with donation button (heart icon), coffee button (mug icon), version text "Crit Commit v0.1.0", settings gear icon, and connection status dot
+- ✅ **Coffee Shop Modal** - AgentQ10 discount code with copy-to-clipboard functionality and CloudCityRoasters.com link
+
+**Integration:**
+- All components are properly wired into `main.ts`
+- Footer receives WebSocket client for settings functionality  
+- Connection status updates both stats panel and footer
+- Coffee shop modal is accessible from both footer icon and base camp coffee shop sprite
+
+**Verification:**
+- ✅ All gates passed: `npm run lint && npm run typecheck && npm run build && npm test`
+- ✅ All 54 tests passing
+- ✅ TypeScript compilation successful
+- ✅ All packages built including web-ui with Vite
+
+The next unchecked task is **Task 31: Zone choice UI and world map**. Ready to proceed!
+
+  Progress: 30 / 35 tasks done
+================================================================
+  Iteration 37 / 60 — Task 31 — SONNET — 15:38:52
+================================================================
+Error: Reached max turns (40)
+  Progress: 30 / 35 tasks done
+================================================================
+  Iteration 38 / 60 — Task 31 — SONNET — 15:45:50
+================================================================

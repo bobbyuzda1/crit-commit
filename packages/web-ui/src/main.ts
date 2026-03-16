@@ -12,6 +12,8 @@ import { createCharacterSprite, createPartyMemberSprite } from "./sprites/charac
 import { CritEffectManager } from "./effects/crit-effect.js";
 import { Footer } from "./ui/footer.js";
 import { CoffeeShopModal } from "./ui/coffee-shop-modal.js";
+import { initializeZoneChoiceModal } from "./ui/zone-choice.js";
+import { initializeWorldMapModal } from "./ui/world-map.js";
 
 async function init() {
   console.log("🎮 Initializing Crit Commit Web UI...");
@@ -37,6 +39,11 @@ async function init() {
   // Initialize Footer
   const footer = new Footer("#footer", wsClient);
   console.log("🦶 Footer initialized");
+
+  // Initialize zone choice and world map modals
+  const zoneChoiceModal = initializeZoneChoiceModal(gameStore, wsClient);
+  const worldMapModal = initializeWorldMapModal(gameStore, wsClient);
+  console.log("🗺️ Zone choice and world map modals initialized");
 
   // Connect WebSocket message handling to game store
   wsClient.onMessage((message) => {
@@ -157,7 +164,9 @@ async function init() {
       eventFeed,
       statsPanel
     },
-    footer
+    footer,
+    zoneChoiceModal,
+    worldMapModal
   };
 
   console.log("✅ Crit Commit Web UI initialized successfully");

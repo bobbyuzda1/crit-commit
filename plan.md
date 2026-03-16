@@ -57,7 +57,7 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 28: Crit animation and particle effects
 - [x] Task 29: Stackjack UI
 - [x] Task 30: Modal, settings, footer, and coffee shop
-- [ ] Task 31: Zone choice UI and world map
+- [x] Task 31: Zone choice UI and world map
 - [ ] Task 32: End-to-end integration wiring
 - [ ] Task 33: README and game documentation
 - [ ] Task 34: Community submission schema and GitHub Actions

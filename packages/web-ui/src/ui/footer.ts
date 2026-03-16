@@ -6,6 +6,7 @@
 import { openModal } from "./modal.js";
 import { SettingsPanel } from "./settings-panel.js";
 import { CoffeeShopModal } from "./coffee-shop-modal.js";
+import { openWorldMap } from "./world-map.js";
 
 export type ConnectionStatus = "connected" | "connecting" | "disconnected" | "failed";
 
@@ -94,8 +95,14 @@ export class Footer {
       CoffeeShopModal.open();
     });
 
+    // Map button
+    const mapButton = this.createIconButton("🗺️", "Open world map", () => {
+      openWorldMap();
+    });
+
     leftSection.appendChild(donationButton);
     leftSection.appendChild(coffeeButton);
+    leftSection.appendChild(mapButton);
 
     // Center section: Version
     const centerSection = document.createElement("div");
