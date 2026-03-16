@@ -2,6 +2,10 @@ import "./style.css";
 import { Application, Assets, Text } from "pixi.js";
 import { createWSClient } from "./ws-client.js";
 import { createGameStore } from "./store.js";
+import { Dashboard } from "./ui/dashboard.js";
+import { QuestLog } from "./ui/quest-log.js";
+import { EventFeed } from "./ui/event-feed.js";
+import { StatsPanel } from "./ui/stats-panel.js";
 
 async function init() {
   console.log("🎮 Initializing Crit Commit Web UI...");
@@ -9,6 +13,16 @@ async function init() {
   // Initialize game store
   const gameStore = createGameStore();
   console.log("📦 Game store initialized");
+
+  // Initialize Dashboard UI
+  const dashboard = new Dashboard("#dashboard");
+  console.log("🎛️ Dashboard layout initialized");
+
+  // Initialize Dashboard Components
+  const questLog = new QuestLog(dashboard.getQuestLogContainer(), gameStore);
+  const eventFeed = new EventFeed(dashboard.getEventFeedContainer(), gameStore);
+  const statsPanel = new StatsPanel(dashboard.getStatsPanelContainer(), gameStore);
+  console.log("📋 Dashboard components initialized");
 
   // Initialize WebSocket client
   const wsClient = createWSClient();
@@ -24,13 +38,16 @@ async function init() {
   wsClient.onStatusChange((status) => {
     console.log("🔗 WebSocket status:", status);
 
-    // Update UI based on connection status (could be expanded later)
+    // Update UI based on connection status
     const statusText = status.status === "connected" ? "🟢 Connected" :
                       status.status === "connecting" ? "🟡 Connecting..." :
                       status.status === "failed" ? `🔴 Failed: ${status.lastError}` :
                       "⚪ Disconnected";
 
     document.title = `Crit Commit - ${statusText}`;
+
+    // Update stats panel connection status
+    statsPanel.setConnectionStatus(status.status);
   });
 
   // Subscribe to key game state changes for logging
@@ -132,7 +149,13 @@ async function init() {
   (window as any).critCommit = {
     gameStore,
     wsClient,
-    pixiApp: app
+    pixiApp: app,
+    dashboard: {
+      dashboard,
+      questLog,
+      eventFeed,
+      statsPanel
+    }
   };
 
   console.log("✅ Crit Commit Web UI initialized successfully");

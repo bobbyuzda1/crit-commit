@@ -50,9 +50,9 @@ Each task below has a number matching the detailed plan. Read the corresponding 
 - [x] Task 21: CLI scaffold and start/status commands
 - [x] Task 22: First-run flow and character creation
 - [x] Task 23: Reset and repair commands
-- [ ] Task 24: Vite + PixiJS project setup
-- [ ] Task 25: WebSocket client and game state store
-- [ ] Task 26: Dashboard — quest log, event feed, stats
+- [x] Task 24: Vite + PixiJS project setup
+- [x] Task 25: WebSocket client and game state store
+- [x] Task 26: Dashboard — quest log, event feed, stats
 - [ ] Task 27: Game canvas — base camp scene and character sprites
 - [ ] Task 28: Crit animation and particle effects
 - [ ] Task 29: Stackjack UI
