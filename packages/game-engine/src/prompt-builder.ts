@@ -22,31 +22,37 @@ export function buildPrompt(
   events: BatchedEvents,
   pendingActions: string[],
 ): string {
+  // Build a compact state snapshot, handling missing/undefined fields gracefully
+  const activeQuests = Array.isArray(state.activeQuests) ? state.activeQuests : [];
+  const zones = Array.isArray(state.zones) ? state.zones : [];
+  const party = Array.isArray(state.party) ? state.party : [];
+  const inventory = Array.isArray(state.inventory) ? state.inventory : [];
+  const materiaCollection = Array.isArray((state as unknown as Record<string, unknown>).materiaCollection) ? (state as unknown as Record<string, unknown>).materiaCollection as unknown[] : [];
+
   const stateSnapshot = {
     character: {
-      name: state.character.name,
-      class: state.character.class,
-      level: state.character.level,
-      xp: state.character.xp,
-      xpToNext: state.character.xpToNext,
-      critChance: state.character.critChance,
-      ascensionLevel: state.character.ascensionLevel ?? 0,
+      name: state.character?.name ?? "Unknown",
+      class: state.character?.class ?? "battlemage",
+      level: state.character?.level ?? 1,
+      xp: state.character?.xp ?? 0,
+      xpToNext: state.character?.xpToNext ?? 100,
+      critChance: state.character?.critChance ?? 0.05,
+      ascensionLevel: state.character?.ascensionLevel ?? 0,
     },
-    stats: state.stats,
-    activeQuests: state.activeQuests.map((q) => ({
+    stats: state.stats ?? {},
+    activeQuests: activeQuests.slice(0, 5).map((q) => ({
       id: q.id,
       title: q.title,
       type: q.type,
       progress: q.progress,
       maxProgress: q.maxProgress,
     })),
-    currentZoneId: state.currentZoneId,
-    zoneCount: state.zones.length,
-    partySize: state.party.filter((p) => p.isActive).length,
-    critStreak: state.critStreak,
-    isInSession: state.isInSession,
-    inventoryCount: state.inventory.length,
-    materiaCount: state.materiaCollection.length,
+    currentZoneId: (state as unknown as Record<string, unknown>).currentZoneId ?? "cloud-city",
+    zoneCount: zones.length,
+    partySize: party.filter((p) => p.isActive).length,
+    critStreak: (state as unknown as Record<string, unknown>).critStreak ?? 0,
+    inventoryCount: inventory.length,
+    materiaCount: materiaCollection.length,
   };
 
   const sections: string[] = [];

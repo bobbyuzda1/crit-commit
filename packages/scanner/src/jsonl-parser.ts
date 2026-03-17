@@ -27,7 +27,8 @@ export function parseJsonlLine(line: string): ScannerEvent[] {
     }
 
     // Extract tool_use blocks from content array
-    const content = entry.content;
+    // Claude Code JSONL uses entry.message.content (not entry.content)
+    const content = entry.message?.content ?? entry.content;
     if (!Array.isArray(content)) {
       return events;
     }

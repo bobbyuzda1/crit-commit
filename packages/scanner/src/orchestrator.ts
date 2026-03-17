@@ -89,7 +89,16 @@ export class Orchestrator {
 
     // Create file watcher with configured watch paths
     const watchPaths = this.settings.watchPaths;
+    // eslint-disable-next-line no-console
+    console.log(`[SCANNER] Watching ${watchPaths.length} path(s): ${watchPaths.join(", ")}`);
     this.fileWatcher = new FileWatcher(watchPaths, (line, sessionId) => {
+      const events = parseJsonlLine(line);
+      // eslint-disable-next-line no-console
+      console.log(`[SCANNER] JSONL line from session ${sessionId.substring(0, 8)}... → ${events.length} events parsed`);
+      if (events.length > 0) {
+        // eslint-disable-next-line no-console
+        console.log(`[SCANNER]   Events: ${events.map(e => `${e.type}${'toolName' in e ? ':' + e.toolName : ''}`).join(', ')}`);
+      }
       this.handleJsonlLine(line, sessionId);
     });
 
@@ -114,7 +123,11 @@ export class Orchestrator {
 
     // Start batch processing timer
     const intervalMs = this.config.batchIntervalMinutes * 60 * 1000;
+    // eslint-disable-next-line no-console
+    console.log(`[SCANNER] Batch interval: ${this.config.batchIntervalMinutes} min (${intervalMs}ms)`);
     this.batchTimer = setInterval(() => {
+      // eslint-disable-next-line no-console
+      console.log(`[SCANNER] Batch timer fired — processing events...`);
       void this.processBatch();
     }, intervalMs);
 
@@ -185,6 +198,8 @@ export class Orchestrator {
    * Handle a client WebSocket message
    */
   private handleClientMessage(message: ClientMessage): void {
+    // eslint-disable-next-line no-console
+    console.log(`[SCANNER] Client message received: ${message.type}`, JSON.stringify(message).substring(0, 200));
     switch (message.type) {
       case "request_state":
         if (this.gameState && this.server) {
@@ -483,6 +498,9 @@ export class Orchestrator {
       this.config.batchIntervalMinutes,
     );
 
+    // eslint-disable-next-line no-console
+    console.log(`[SCANNER] Batch flush: edits=${flushResult.totalEvents.edits}, reads=${flushResult.totalEvents.fileReads}, searches=${flushResult.totalEvents.grepSearches}, newFiles=${flushResult.totalEvents.newFiles}`);
+
     // Skip if no events in this batch
     if (
       flushResult.totalEvents.edits === 0 &&
@@ -491,6 +509,8 @@ export class Orchestrator {
       flushResult.totalEvents.globSearches === 0 &&
       flushResult.totalEvents.fileReads === 0
     ) {
+      // eslint-disable-next-line no-console
+      console.log(`[SCANNER] No events in batch — skipping Claude call`);
       return;
     }
 
@@ -539,8 +559,31 @@ export class Orchestrator {
       );
     }
 
-    const prompt = buildPrompt(this.gameState, batchedEvents, pendingActions);
+    // Cap the game state to essential fields to keep prompt under 10K chars
+    const compactState = {
+      character: {
+        name: this.gameState.character.name,
+        class: this.gameState.character.class,
+        level: this.gameState.character.level,
+        xp: this.gameState.character.xp,
+        critChance: this.gameState.character.critChance,
+        ascensionLevel: this.gameState.character.ascensionLevel || 0,
+      },
+      activeZone: this.gameState.zones?.find((z) => z.isActive)?.name || "Cloud City Base Camp",
+      zonesUnlocked: this.gameState.stats?.zonesUnlocked || 1,
+      partySize: Array.isArray(this.gameState.party) ? this.gameState.party.length : 0,
+      stats: {
+        totalCrits: this.gameState.stats?.totalCrits || 0,
+        questsCompleted: this.gameState.stats?.questsCompleted || 0,
+      },
+    };
+
+    const prompt = buildPrompt(compactState as unknown as typeof this.gameState, batchedEvents, pendingActions);
+    // eslint-disable-next-line no-console
+    console.log(`[SCANNER] Invoking Claude game engine (prompt: ${prompt.length} chars)...`);
     const rawResponse = await invokeClaudeEngine(prompt);
+    // eslint-disable-next-line no-console
+    console.log(`[SCANNER] Claude response: ${rawResponse ? rawResponse.substring(0, 200) + '...' : 'NULL (failed)'}`);
 
     if (rawResponse) {
       const update = parseGameEngineResponse(rawResponse);
